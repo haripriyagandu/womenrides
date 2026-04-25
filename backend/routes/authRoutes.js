@@ -81,7 +81,9 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
     await user.save();
 
-    const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const host = req.headers['host'] || 'localhost:3000';
+    const resetUrl = `${protocol}://${host}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#fcf9f9;padding:32px;border-radius:20px;border:1px solid #faeef2;">
