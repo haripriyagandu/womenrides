@@ -494,7 +494,7 @@ function DashboardContent() {
     });
 
     socket.on('ride-reminder', (data) => {
-      showAlert(data.message, 'info', 10000);
+      showAlert(data.message, 'info');
     });
 
     return () => {
