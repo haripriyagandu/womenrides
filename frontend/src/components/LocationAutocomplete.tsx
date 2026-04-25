@@ -62,10 +62,11 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
     const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
     if (!apiKey) return;
 
+    const proximity = userLoc ? `&proximity=${userLoc.lng},${userLoc.lat}` : '';
     setLoading(true);
     try {
       const res = await fetch(
-        `https://api.maptiler.com/geocoding/${encodeURIComponent(searchText)}.json?key=${apiKey}&language=en&country=in&bbox=78.21,17.19,78.61,17.57`
+        `https://api.maptiler.com/geocoding/${encodeURIComponent(searchText)}.json?key=${apiKey}&language=en&country=in&fuzzyMatch=true&limit=10${proximity}`
       );
       const data = await res.json();
       if (data.features) {

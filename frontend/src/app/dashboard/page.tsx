@@ -48,6 +48,7 @@ function DashboardContent() {
   const [ratingValue, setRatingValue] = useState(0);
   const [ratingLoading, setRatingLoading] = useState(false);
   const [confirmModal, setConfirmModal] = useState<any>(null);
+  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
   const [socket, setSocket] = useState<any>(null);
   const [pickupObj, setPickupObj] = useState<any>(null);
   const [dropObj, setDropObj] = useState<any>(null);
@@ -183,6 +184,14 @@ function DashboardContent() {
   useEffect(() => {
     fetchActiveRides();
     fetchUnreadAlerts();
+    
+    // Fetch user location for search proximity
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      });
+    }
+
     const interval = setInterval(() => {
       fetchActiveRides();
       fetchUnreadAlerts();
@@ -688,6 +697,7 @@ function DashboardContent() {
                 onSelect={handlePickupSelect}
                 placeholder="Enter pickup location"
                 dotColor="#22c55e"
+                userLoc={userLoc}
               />
               <LocationAutocomplete
                 value={drop}
@@ -696,6 +706,7 @@ function DashboardContent() {
                 placeholder="Enter destination"
                 dotColor="#e11d48"
                 showCurrentLocation={false}
+                userLoc={userLoc}
               />
             </div>
 
