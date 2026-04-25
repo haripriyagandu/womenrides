@@ -71,6 +71,7 @@ function SignupWizard() {
   const { login } = useAuth();
   const searchParams = useSearchParams();
   const role = searchParams.get('role') === 'driver' ? 'driver' : 'customer';
+  console.log('DEBUG: Using API_URL =', API_URL);
 
   const [step, setStep] = useState(1);
   const [name, setName] = useState('');
