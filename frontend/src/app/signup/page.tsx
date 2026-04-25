@@ -2,6 +2,7 @@
 import { useState, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/utils/api';
 
 // ─── Shared input style ──────────────────────────
 const inputStyle: React.CSSProperties = {
@@ -102,7 +103,7 @@ function SignupWizard() {
     setError('');
     setIsLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:5001/api/auth/send-otp', {
+      const res = await fetch(`${API_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, email })
@@ -125,7 +126,7 @@ function SignupWizard() {
     setError('');
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:5001/api/auth/verify-otp', {
+      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, otp: otp.join('') })
@@ -146,7 +147,7 @@ function SignupWizard() {
         panNumber: docs.panNumber,
         vehicleNumber: docs.vehicleNumber
       };
-      const res = await fetch('http://localhost:5001/api/auth/register', { 
+      const res = await fetch(`${API_URL}/api/auth/register`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify(payload) 

@@ -3,6 +3,7 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/utils/api';
 
 const inputStyle: React.CSSProperties = {
   width: '100%', boxSizing: 'border-box', padding: '14px 14px 14px 48px',
@@ -25,7 +26,7 @@ function DriverLoginForm() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://127.0.0.1:5001/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, password })
       });
@@ -53,7 +54,7 @@ function DriverLoginForm() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/verify-login-otp', {
+      const res = await fetch(`${API_URL}/api/auth/verify-login-otp`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, otp })
       });
