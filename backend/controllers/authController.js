@@ -119,11 +119,16 @@ const loginUser = async (req, res) => {
       }
     };
 
-    await sendEmail({ 
-      to: user.email, 
-      subject: 'SheRide Login Verification', 
-      text: otp 
-    });
+    try {
+      await sendEmail({ 
+        to: user.email, 
+        subject: 'SheRide Login Verification', 
+        text: otp 
+      });
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      return res.status(500).json({ message: 'Failed to send verification email. Please check your SMTP settings.' });
+    }
 
     res.status(200).json({ 
       status: 'pending_otp',
@@ -177,11 +182,16 @@ const sendRegistrationOtp = async (req, res) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
   registrationOtps[phone] = { otp, expires: Date.now() + 600000 }; // 10 min
 
-  await sendEmail({ 
-    to: email, 
-    subject: 'SheRide Registration OTP', 
-    text: otp 
-  });
+  try {
+    await sendEmail({ 
+      to: email, 
+      subject: 'SheRide Registration OTP', 
+      text: otp 
+    });
+  } catch (emailError) {
+    console.error('Email sending failed:', emailError);
+    return res.status(500).json({ message: 'Failed to send OTP email. Please check your SMTP settings.' });
+  }
   
   res.status(200).json({ message: 'OTP sent successfully to your email' });
 };
