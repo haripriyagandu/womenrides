@@ -892,7 +892,7 @@ function DashboardContent() {
       <ActiveRideWidget rides={activeRides} unreadCount={unreadCount} />
       
       {/* ── FLOATING SOS BUTTON ── */}
-      {rideStatus !== 'idle' && rideStatus !== 'searching' && activeRides[0] && (
+      {rideStatus !== 'idle' && rideStatus !== 'searching' && activeRides[0] && activeRides[0].rideType === 'SheRide Safe' && (
         <button 
           onClick={async () => {
             const activeRide = activeRides[0];
