@@ -10,7 +10,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
     const cleanPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : '';
     
     transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: process.env.SMTP_PORT || 587,
       secure: process.env.SMTP_PORT === '465',
       auth: {
