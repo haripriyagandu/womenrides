@@ -1,0 +1,63 @@
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <div className="flex-grow flex flex-col items-center justify-center p-6 bg-[#fcf9f9]">
+      {/* Container constrained tightly to match mobile proportions making it "cute" */}
+      <div className="w-full max-w-[340px] flex flex-col items-center">
+        
+        {/* Logo Icon */}
+        <div className="w-[90px] h-[90px] rounded-[1.5rem] bg-gradient-to-b from-[#ff4d6d] to-[#f9844a] flex items-center justify-center mb-5 shadow-xl shadow-pink-200/50 transform rotate-3">
+          <svg className="w-10 h-10 text-white transform -rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+        </div>
+
+        {/* Title & Subtitle */}
+        <h1 className="text-[32px] font-[900] text-[#2b101c] mb-1 tracking-tight text-center">SheRide</h1>
+        <p className="text-[#846b74] font-[500] text-[15px] mb-10 text-center">Safe rides by women, for women</p>
+
+        {/* Buttons */}
+        <div className="w-full space-y-4">
+          <Link href="/signup?role=customer" className="block w-full bg-white rounded-3xl p-4 flex items-center gap-4 shadow-[0_4px_24px_rgba(235,215,220,0.6)] border border-[#faeef2] hover:scale-[1.03] transition-transform active:scale-95">
+            <div className="w-[50px] h-[50px] rounded-[14px] bg-[#fceef3] flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-[#d65578]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-[#2b101c] font-bold text-[18px] leading-tight mb-0.5">Continue as<br/>Customer</h2>
+            </div>
+          </Link>
+
+          <Link href="/signup?role=driver" className="block w-full bg-white rounded-3xl p-4 flex items-center gap-4 shadow-[0_4px_24px_rgba(235,220,215,0.6)] border border-[#faf0eb] hover:scale-[1.03] transition-transform active:scale-95">
+            <div className="w-[50px] h-[50px] rounded-[14px] bg-[#fdf2e9] flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-[#df874f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-[#2b101c] font-bold text-[18px] leading-tight mb-0.5">Continue as<br/>Driver</h2>
+            </div>
+          </Link>
+        </div>
+
+        {/* Login Links */}
+        <div className="mt-10 text-center space-y-4">
+          <p className="text-[#846b74] font-medium text-[14px]">
+            Already have an account?{' '}
+            <Link href="/login" className="font-bold text-[#d65578] hover:underline">
+              Customer Log in
+            </Link>
+          </p>
+          <div>
+            <Link href="/driver/login" className="inline-block px-8 py-3 bg-[#0f172a] text-white rounded-2xl text-[14px] font-bold shadow-lg shadow-gray-400/20 hover:scale-[1.05] transition-transform">
+              🚀 Driver Access Hub
+            </Link>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
