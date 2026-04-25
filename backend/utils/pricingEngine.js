@@ -41,12 +41,12 @@ const calculateFare = async ({ pickupLat, pickupLng, dropLat, dropLng, trafficLe
 
   // 1. Base Fare (Covers first 2.0 km)
   const baseFareIncludedKm = 2.0;
-  const baseFare = 35 * rideMultiplier;
+  const baseFare = 30 * rideMultiplier;
 
   // 2. Distance Cost (Only for km above 2.0)
   let distanceCost = 0;
   if (distanceKm > baseFareIncludedKm) {
-    distanceCost = (distanceKm - baseFareIncludedKm) * 10 * rideMultiplier;
+    distanceCost = (distanceKm - baseFareIncludedKm) * 8 * rideMultiplier;
   }
 
   // 3. Time Cost (Traffic)
@@ -65,7 +65,7 @@ const calculateFare = async ({ pickupLat, pickupLng, dropLat, dropLng, trafficLe
   let finalFare = Math.round(totalRaw * surgeMultiplier);
   
   // Enforce Minimum Fare
-  if (finalFare < 35) finalFare = 35;
+  if (finalFare < 30) finalFare = 30;
 
   return {
     finalFare,
