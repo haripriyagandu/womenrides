@@ -34,7 +34,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
 
   try {
     const info = await transporter.sendMail({
-      from: '"SheRide Safety" <noreply@sheride.app>',
+      from: `"SheRide Safety" <${process.env.SMTP_USER}>`,
       to,
       subject,
       text: text || "Your SheRide Verification Code",
