@@ -13,6 +13,24 @@ router.post('/send-otp', sendRegistrationOtp);
 router.post('/verify-otp', verifyRegistrationOtp);
 router.post('/verify-login-otp', verifyLoginOtp);
 
+// 🧪 Temporary Seed Route for Verification Docs
+router.get('/seed', async (req, res) => {
+  try {
+    const VerifiedDoc = require('../models/VerifiedDoc');
+    const sampleDocs = [
+      { docType: 'aadhar', docNumber: '123456789012', ownerName: 'Aadhar Holder 1' },
+      { docType: 'aadhar', docNumber: '987654321098', ownerName: 'Aadhar Holder 2' },
+      { docType: 'license', docNumber: 'DL-12345678', ownerName: 'License Holder 1' },
+      { docType: 'pan', docNumber: 'ABCDE1234F', ownerName: 'PAN Holder 1' }
+    ];
+    await VerifiedDoc.deleteMany({});
+    await VerifiedDoc.insertMany(sampleDocs);
+    res.json({ message: 'Successfully seeded VerifiedDocs collection on LIVE server! 🎉', docs: sampleDocs });
+  } catch (err) {
+    res.status(500).json({ message: 'Seeding failed', error: err.message });
+  }
+});
+
 // GET /api/auth/me
 router.get('/me', protect, async (req, res) => {
   if (!req.user) return res.status(401).json({ message: 'User not found' });
