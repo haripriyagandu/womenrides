@@ -21,7 +21,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: ['https://womenrides.vercel.app', 'https://womenrides-app.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
   }
@@ -32,9 +32,10 @@ app.set('io', io);
 
 // Middlewares
 app.use(cors({
-  origin: '*',
+  origin: ['https://womenrides.vercel.app', 'https://womenrides-app.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(express.json());
 app.use(morgan('dev'));
