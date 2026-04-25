@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 const sendEmail = async ({ to, subject, html, text }) => {
   let transporter;
 
-  const isProduction = process.env.SMTP_HOST && process.env.SMTP_USER;
+  const isProduction = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
 
   if (isProduction) {
     // Real SMTP (Logic to remove spaces from the app password automatically)
