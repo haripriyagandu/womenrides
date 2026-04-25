@@ -31,12 +31,11 @@ const io = new Server(server, {
 app.set('io', io);
 
 // Middlewares
-app.use(cors({
-  origin: ['https://womenrides.vercel.app', 'https://womenrides-app.vercel.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(cors()); // Temporarily allow all for testing mobile
+app.use((req, res, next) => {
+  console.log('Incoming request from:', req.headers.origin);
+  next();
+});
 app.use(express.json());
 app.use(morgan('dev'));
 
