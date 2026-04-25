@@ -534,7 +534,7 @@ function DashboardContent() {
     const token = localStorage.getItem('customerToken');
     if (!token) return;
     try {
-      const res = await fetch('http://localhost:5001/api/auth/emergency-contacts', {
+      const res = await fetch(`${API_URL}/api/auth/emergency-contacts`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 'use client';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/utils/api';
 import RoleGuard from '@/components/RoleGuard';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -24,7 +25,7 @@ export default function HistoryPage() {
   const fetchHistory = async () => {
     try {
       const token = localStorage.getItem('customerToken');
-      const res = await fetch('http://localhost:5001/api/auth/history', {
+      const res = await fetch(`${API_URL}/api/auth/history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {

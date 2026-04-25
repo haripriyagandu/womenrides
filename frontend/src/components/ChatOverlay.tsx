@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { API_URL } from '@/utils/api';
 
 interface Message {
   _id: string;
@@ -25,7 +26,7 @@ export default function ChatOverlay({ rideId, currentUserId, isOpen, onClose, so
   useEffect(() => {
     if (isOpen && rideId) {
       // Fetch history
-      fetch(`http://127.0.0.1:5001/api/chat/history/${rideId}`, {
+      fetch(`${API_URL}/api/chat/history/${rideId}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('customerToken') || localStorage.getItem('driverToken')}` }
       })
       .then(res => res.json())

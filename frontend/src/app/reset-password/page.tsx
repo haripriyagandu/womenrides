@@ -2,6 +2,7 @@
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { API_URL } from '@/utils/api';
 
 function ResetForm() {
   const router = useRouter();
@@ -28,7 +29,7 @@ function ResetForm() {
     }
     setStatus('loading');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/reset-password', {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, email, newPassword })
       });

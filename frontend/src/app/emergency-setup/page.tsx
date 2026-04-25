@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/utils/api';
 
 type Contact = { name: string; phone: string; relation: string };
 
@@ -37,7 +38,7 @@ export default function EmergencySetup() {
     if (!token) { router.push('/login'); return; }
     setSaving(true);
     try {
-      const res = await fetch('http://localhost:5001/api/auth/emergency-contacts', {
+      const res = await fetch(`${API_URL}/api/auth/emergency-contacts`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ contacts: validContacts })

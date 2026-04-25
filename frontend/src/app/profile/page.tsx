@@ -1,5 +1,6 @@
 'use client';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/utils/api';
 import RoleGuard from '@/components/RoleGuard';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export default function ProfilePage() {
   const fetchHistoryCount = async () => {
     try {
       const token = localStorage.getItem('customerToken');
-      const res = await fetch('http://localhost:5001/api/auth/history', {
+      const res = await fetch(`${API_URL}/api/auth/history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -54,7 +55,7 @@ export default function ProfilePage() {
   const saveProfile = async () => {
     try {
       const token = localStorage.getItem('customerToken');
-      const res = await fetch('http://localhost:5001/api/auth/profile', {
+      const res = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ export default function ProfilePage() {
   const saveContacts = async () => {
     try {
       const token = localStorage.getItem('customerToken');
-      const res = await fetch('http://localhost:5001/api/auth/emergency-contacts', {
+      const res = await fetch(`${API_URL}/api/auth/emergency-contacts`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
