@@ -151,7 +151,7 @@ function DriverDashboardContent() {
        const loadStats = async () => {
          try {
            const token = localStorage.getItem('driverToken');
-           const res = await fetch('http://127.0.0.1:5001/api/rides/driver/history', {
+           const res = await fetch(`${API_URL}/api/rides/driver/history`, {
              headers: { 'Authorization': `Bearer ${token}` }
            });
            const data = await res.json();
@@ -485,7 +485,7 @@ function DriverDashboardContent() {
              {rideState === 'accepted' && (
                 <button onClick={async () => {
                   const token = localStorage.getItem('driverToken');
-                  const res = await fetch(`http://localhost:5001/api/rides/${activeRide.rideId}/status`, {
+                  const res = await fetch(`${API_URL}/api/rides/${activeRide.rideId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ status: 'arrived' })

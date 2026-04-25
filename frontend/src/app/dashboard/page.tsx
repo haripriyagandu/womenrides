@@ -1211,7 +1211,7 @@ function DashboardContent() {
                     }
                     try {
                       const token = localStorage.getItem('customerToken');
-                      const res = await fetch(`http://localhost:5001/api/rides/${rideIdToCancel}/cancel`, {
+                      const res = await fetch(`${API_URL}/api/rides/${rideIdToCancel}/cancel`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                         body: JSON.stringify({ reason })

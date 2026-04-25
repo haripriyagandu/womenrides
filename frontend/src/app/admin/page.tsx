@@ -19,7 +19,7 @@ export default function AdminDashboard() {
 
   const fetchDrivers = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/admin/drivers');
+      const res = await fetch(`${API_URL}/api/admin/drivers`);
       const data = await res.json();
       setDrivers(data);
     } catch (err) {
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
 
   const verifyDriver = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/admin/drivers/${id}/approve`, {
+      const res = await fetch(`${API_URL}/api/admin/drivers/${id}/approve`, {
         method: 'PUT'
       });
       if (res.ok) {
