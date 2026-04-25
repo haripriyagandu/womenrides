@@ -54,7 +54,7 @@ function DriverDashboardContent() {
     try {
       const token = localStorage.getItem('driverToken');
       if (!token) return;
-      const res = await fetch(`${API_URL}/api/rides/driver/active`, {
+      const res = await fetch(`${API_URL}/api/rides/driver/active?t=${Date.now()}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -443,44 +443,46 @@ function DriverDashboardContent() {
                 </div>
              </div>
 
-              <button 
-                onClick={() => {
-                  if (activeRide?.rideId) {
-                    setChatRideId(activeRide.rideId);
-                    setIsChatOpen(true);
-                    setUnreadCount(0); // Explicitly reset on click
-                  }
-                }}
-                style={{ width: '100%', marginBottom: '16px', padding: '14px', background: '#f8fafc', color: '#111827', fontWeight: 800, borderRadius: '16px', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-              >
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '20px' }}>💬</span>
-                  {unreadCount > 0 && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '-10px',
-                      right: '-10px',
-                      background: '#ef4444',
-                      color: '#fff',
-                      minWidth: '20px',
-                      height: '20px',
-                      borderRadius: '10px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '10px',
-                      fontWeight: 900,
-                      border: '2px solid #fff',
-                      boxShadow: '0 4px 8px rgba(239, 68, 68, 0.3)',
-                      padding: '0 4px',
-                      zIndex: 10
-                    }}>
-                      {unreadCount}
-                    </div>
-                  )}
-                </div>
-                <span>Chat with Customer</span>
-              </button>
+              {rideState !== 'started' && (
+                <button 
+                  onClick={() => {
+                    if (activeRide?.rideId) {
+                      setChatRideId(activeRide.rideId);
+                      setIsChatOpen(true);
+                      setUnreadCount(0); // Explicitly reset on click
+                    }
+                  }}
+                  style={{ width: '100%', marginBottom: '16px', padding: '14px', background: '#f8fafc', color: '#111827', fontWeight: 800, borderRadius: '16px', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '20px' }}>💬</span>
+                    {unreadCount > 0 && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '-10px',
+                        right: '-10px',
+                        background: '#ef4444',
+                        color: '#fff',
+                        minWidth: '20px',
+                        height: '20px',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '10px',
+                        fontWeight: 900,
+                        border: '2px solid #fff',
+                        boxShadow: '0 4px 8px rgba(239, 68, 68, 0.3)',
+                        padding: '0 4px',
+                        zIndex: 10
+                      }}>
+                        {unreadCount}
+                      </div>
+                    )}
+                  </div>
+                  <span>Chat with Customer</span>
+                </button>
+              )}
 
              {rideState === 'accepted' && (
                 <button onClick={async () => {
