@@ -29,9 +29,14 @@ function DashboardContent() {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // 🛡️ Nuclear Responsiveness Fix: Manual Window Width Check
+  // 🛡️ Nuclear Responsiveness Fix: Manual Window Width & Touch Check
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    const checkMobile = () => {
+      const width = window.innerWidth;
+      const isTouch = navigator.maxTouchPoints > 0;
+      // If width < 1300 OR it's a touch device, show mobile UI
+      setIsMobile(width < 1300 || isTouch);
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);

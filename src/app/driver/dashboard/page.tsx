@@ -16,6 +16,19 @@ function DriverDashboardContent() {
   const [userName, setUserName] = useState(driverProfile?.name || 'Driver');
   const [userId, setUserId] = useState(driverProfile?._id || '');
   const [isOnline, setIsOnline] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 🛡️ Nuclear Responsiveness Fix: Manual Window Width & Touch Check
+  useEffect(() => {
+    const checkMobile = () => {
+      const width = window.innerWidth;
+      const isTouch = navigator.maxTouchPoints > 0;
+      setIsMobile(width < 1300 || isTouch);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const [socket, setSocket] = useState<any>(null);
   const [incomingRide, setIncomingRide] = useState<any>(null);
   const [activeRide, setActiveRide] = useState<any>(null);
@@ -382,7 +395,10 @@ function DriverDashboardContent() {
         </div>
         
         {/* Right: Actions (Desktop) */}
-        <div className="desktop-only lg:flex items-center gap-6">
+        <div 
+          className="lg:flex items-center gap-6"
+          style={{ display: isMobile ? 'none' : 'flex' }}
+        >
           <Link href="/driver/dashboard" className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">Map</Link>
           <Link href="/driver/history" className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">My Rides</Link>
           <button onClick={() => setIsProfileOpen(true)} className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">Profile</button>
@@ -708,8 +724,11 @@ function DriverDashboardContent() {
       />
 
       {/* ── MOBILE BOTTOM NAVIGATION BAR ── */}
-      {!activeRide && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+      {isMobile && !activeRide && (
+        <div 
+          className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]"
+          style={{ display: 'flex' }}
+        >
           <button onClick={() => setRideState('accepted')} className="flex flex-col items-center gap-1.5 px-4">
             <span className="text-xl text-[#0f172a]">🏠</span>
             <span className="text-[10px] font-black text-[#0f172a] uppercase tracking-wider">Home</span>
