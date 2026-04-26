@@ -8,6 +8,7 @@ import RoleGuard from '@/components/RoleGuard';
 import SystemAlert from '@/components/SystemAlert';
 import ChatOverlay from '@/components/ChatOverlay';
 import Link from 'next/link';
+import { Home, History, User, LogOut } from 'lucide-react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -729,21 +730,21 @@ function DriverDashboardContent() {
           className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]"
           style={{ display: 'flex' }}
         >
-          <button onClick={() => setRideState('accepted')} className="flex flex-col items-center gap-1.5 px-4">
-            <span className="text-xl text-[#0f172a]">🏠</span>
-            <span className="text-[10px] font-black text-[#0f172a] uppercase tracking-wider">Home</span>
+          <button onClick={() => setRideState('accepted')} className="flex flex-col items-center gap-1.5 px-4 group">
+            <Home className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Home</span>
           </button>
-          <Link href="/driver/history" className="flex flex-col items-center gap-1.5 px-4 no-underline">
-            <span className="text-xl">📜</span>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">My Rides</span>
+          <Link href="/driver/history" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
+            <History className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">My Rides</span>
           </Link>
-          <button onClick={() => setIsProfileOpen(true)} className="flex flex-col items-center gap-1.5 px-4">
-            <span className="text-xl">👤</span>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Profile</span>
+          <button onClick={() => setIsProfileOpen(true)} className="flex flex-col items-center gap-1.5 px-4 group">
+            <User className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Profile</span>
           </button>
-          <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4">
-            <span className="text-xl">🚪</span>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Logout</span>
+          <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4 group">
+            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-rose-600 uppercase tracking-wider transition-colors">Logout</span>
           </button>
         </div>
       )}
