@@ -36,3 +36,29 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* 📱 HIGH-RELIABILITY MOBILE RULES (Fallback for Vercel) */
+@media (max-width: 1023px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: block !important;
+  }
+  .mobile-flex {
+    display: flex !important;
+  }
+  .mobile-bar-fix {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
