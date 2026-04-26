@@ -1459,8 +1459,8 @@ function DashboardContent() {
           style={{ display: 'flex' }}
         >
           <Link href="/dashboard" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
-            <Home className="w-5 h-5 text-[#e11d48]" />
-            <span className="text-[10px] font-black text-[#e11d48] uppercase tracking-wider">Ride</span>
+            <Home className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Home</span>
           </Link>
           <Link href="/history" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
             <History className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
