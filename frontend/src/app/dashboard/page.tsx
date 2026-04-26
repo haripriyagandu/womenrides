@@ -135,6 +135,24 @@ function DashboardContent() {
     return () => clearInterval(interval);
   }, [activeRides]);
 
+  // 🕒 10-Minute Timeout for Scheduled Rides
+  useEffect(() => {
+    const checkTimeout = () => {
+      activeRides.forEach(ride => {
+        if (ride.scheduledTime && ride.status === 'requested') {
+          const createdAt = new Date(ride.createdAt || Date.now()).getTime();
+          const now = Date.now();
+          // If 10 mins passed since request
+          if (now - createdAt > 10 * 60 * 1000) {
+            showAlert(`Your scheduled ride for ${new Date(ride.scheduledTime).toLocaleTimeString()} is not being accepted by any driver. Please reschedule.`, "warning", 10000);
+          }
+        }
+      });
+    };
+    const timer = setInterval(checkTimeout, 60000); // Check every minute
+    return () => clearInterval(timer);
+  }, [activeRides]);
+
   const fetchActiveRides = async () => {
     try {
       const token = localStorage.getItem('customerToken');
@@ -339,7 +357,7 @@ function DashboardContent() {
         });
 
         if (isPreBooking && scheduledTime) {
-          showAlert(`📅 Ride scheduled successfully for ${new Date(scheduledTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}!`, 'success');
+          // 🤫 Silent scheduling as requested - no immediate popup
           setRideStatus('idle');
           setShowRides(false);
           setPickup('');
