@@ -630,7 +630,7 @@ function DashboardContent() {
         <div className="flex items-center gap-4 sm:gap-8">
           <button 
             onClick={() => { setRideStatus('idle'); setShowRides(false); setIsSidebarOpen(false); }}
-            className="text-sm font-black text-[#e11d48] bg-transparent border-none cursor-pointer"
+            className="desktop-only text-sm font-black text-[#e11d48] bg-transparent border-none cursor-pointer"
           >
             Home
           </button>

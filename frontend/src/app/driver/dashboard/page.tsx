@@ -382,7 +382,7 @@ function DriverDashboardContent() {
         </div>
         
         {/* Right: Actions (Desktop) */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="desktop-only lg:flex items-center gap-6">
           <Link href="/driver/dashboard" className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">Map</Link>
           <Link href="/driver/history" className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">My Rides</Link>
           <button onClick={() => setIsProfileOpen(true)} className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">Profile</button>
