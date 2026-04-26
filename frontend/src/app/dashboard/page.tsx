@@ -27,6 +27,15 @@ function DashboardContent() {
   const [sosLoading, setSosLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 🛡️ Nuclear Responsiveness Fix: Manual Window Width Check
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Format 12-hour preview for easy interface
   const [scheduleDate, setScheduleDate] = useState('');
@@ -630,11 +639,15 @@ function DashboardContent() {
         <div className="flex items-center gap-4 sm:gap-8">
           <button 
             onClick={() => { setRideStatus('idle'); setShowRides(false); setIsSidebarOpen(false); }}
-            className="desktop-only text-sm font-black text-[#e11d48] bg-transparent border-none cursor-pointer"
+            className="text-sm font-black text-[#e11d48] bg-transparent border-none cursor-pointer"
+            style={{ display: isMobile ? 'none' : 'block' }}
           >
             Home
           </button>
-          <div className="desktop-only lg:flex items-center gap-8 text-sm font-bold">
+          <div 
+            className="lg:flex items-center gap-8 text-sm font-bold"
+            style={{ display: isMobile ? 'none' : 'flex' }}
+          >
             <Link href="/history" className="text-[#6b7280] hover:text-[#e11d48] transition-colors">My Rides</Link>
             <button onClick={() => setIsSafetyOpen(true)} className="text-[#6b7280] hover:text-[#e11d48] transition-colors font-bold cursor-pointer">Safety</button>
             <Link href="/profile" className="text-[#6b7280] hover:text-[#e11d48] transition-colors">Profile</Link>
@@ -1416,8 +1429,12 @@ function DashboardContent() {
 
       {/* ── MOBILE BOTTOM NAVIGATION BAR (Rapido Style) ── */}
       {/* Hide bottom bar during active booking/ride to prevent overlap */}
-      {!showRides && rideStatus === 'idle' && (
-        <div className="mobile-only mobile-bar-fix lg:hidden bg-white border-t border-slate-100 flex items-center justify-around py-3 px-2 safe-bottom shadow-[0_-8px_30px_rgba(0,0,0,0.05)]">
+      {/* ── MOBILE BOTTOM NAVIGATION ── */}
+      {isMobile && !showRides && rideStatus === 'idle' && (
+        <div 
+          className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] safe-bottom"
+          style={{ display: 'flex' }}
+        >
           <Link href="/dashboard" className="flex flex-col items-center gap-1.5 px-4 no-underline">
             <span className="text-xl">🏠</span>
             <span className="text-[10px] font-black text-[#e11d48] uppercase tracking-wider">Ride</span>
