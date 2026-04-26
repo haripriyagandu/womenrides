@@ -11,6 +11,7 @@ import ActiveRideWidget from '@/components/ActiveRideWidget';
 import SystemAlert from '@/components/SystemAlert';
 import ChatOverlay from '@/components/ChatOverlay';
 import { getEstimatedClockTime } from '@/utils/EstimatedTimeHelper';
+import { Home, History, User, LogOut, ShieldCheck, Map as MapIcon } from 'lucide-react';
 
 // Map rendering without SSR
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
@@ -34,8 +35,8 @@ function DashboardContent() {
     const checkMobile = () => {
       const width = window.innerWidth;
       const isTouch = navigator.maxTouchPoints > 0;
-      // If width < 1300 OR it's a touch device, show mobile UI
-      setIsMobile(width < 1300 || isTouch);
+      // 🚀 Extreme Threshold: If width < 1400 OR it's a touch device, show mobile UI
+      setIsMobile(width < 1400 || isTouch);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -499,6 +500,11 @@ function DashboardContent() {
       setAvailableRides([]);
       setRatingRideId(data.rideId);
       setShowRatingModal(true);
+      // ✨ Clear Locations on Completion
+      setPickup('');
+      setDrop('');
+      setPickupObj(null);
+      setDropObj(null);
       showAlert('🏁 Your ride has been completed! Please rate your experience.', 'success');
     });
 
@@ -794,12 +800,6 @@ function DashboardContent() {
             <div className="flex justify-between items-center mb-8">
               <div className="flex flex-col">
                 <div className="flex items-center gap-3 lg:block">
-                  <button 
-                    onClick={() => { setShowRides(false); setRideStatus('idle'); setIsSidebarOpen(false); }}
-                    className="lg:hidden w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-[#111827] active:scale-95"
-                  >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
-                  </button>
                   <div>
                     <h2 className="text-2xl font-black text-[#111827]">Where to?</h2>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Book your SheRide</p>
@@ -1440,27 +1440,27 @@ function DashboardContent() {
           className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] safe-bottom"
           style={{ display: 'flex' }}
         >
-          <Link href="/dashboard" className="flex flex-col items-center gap-1.5 px-4 no-underline">
-            <span className="text-xl">🏠</span>
+          <Link href="/dashboard" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
+            <Home className="w-5 h-5 text-[#e11d48]" />
             <span className="text-[10px] font-black text-[#e11d48] uppercase tracking-wider">Ride</span>
           </Link>
-          <Link href="/history" className="flex flex-col items-center gap-1.5 px-4 no-underline">
-            <span className="text-xl">📜</span>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">My Rides</span>
+          <Link href="/history" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
+            <History className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">My Rides</span>
           </Link>
-          <button onClick={() => setIsSafetyOpen(true)} className="flex flex-col items-center gap-1.5 px-4">
-            <div className="w-12 h-12 -mt-10 bg-[#e11d48] rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
-              <span className="text-xl">🛡️</span>
+          <button onClick={() => setIsSafetyOpen(true)} className="flex flex-col items-center gap-1.5 px-4 group">
+            <div className="w-12 h-12 -mt-10 bg-[#e11d48] rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white group-hover:scale-110 transition-transform">
+              <ShieldCheck className="w-6 h-6" />
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Safety</span>
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Safety</span>
           </button>
-          <Link href="/profile" className="flex flex-col items-center gap-1.5 px-4 no-underline">
-            <span className="text-xl">👤</span>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Profile</span>
+          <Link href="/profile" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
+            <User className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Profile</span>
           </Link>
-          <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4">
-            <span className="text-xl">🚪</span>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Logout</span>
+          <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4 group">
+            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 group-hover:text-rose-600 uppercase tracking-wider transition-colors">Logout</span>
           </button>
         </div>
       )}
