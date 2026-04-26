@@ -39,7 +39,6 @@ function LoginForm() {
         if (data.status === 'pending_otp') {
           setStep(2);
         } else {
-          // Fallback if OTP is disabled on server
           login(data);
           router.push('/dashboard');
         }
@@ -71,73 +70,101 @@ function LoginForm() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fcf9f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Outfit, sans-serif', padding: '24px' }}>
-      <div style={{ width: '100%', maxWidth: '420px' }}>
+    <div className="min-h-screen bg-[#fcf9f9] flex items-center justify-center p-6 sm:p-12">
+      <div className="w-full max-w-[420px]">
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: 'linear-gradient(135deg,#e11d48,#f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '28px' }}>🛵</div>
-          <h1 style={{ fontSize: '30px', fontWeight: 900, color: '#2b101c', margin: '0 0 6px', letterSpacing: '-0.5px' }}>Welcome Back</h1>
-          <p style={{ color: '#846b74', fontSize: '15px', fontWeight: 500, margin: 0 }}>
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#e11d48] to-[#f97316] flex items-center justify-center mx-auto mb-5 text-3xl shadow-lg shadow-pink-200/50">🛵</div>
+          <h1 className="text-3xl font-black text-[#2b101c] mb-1.5 tracking-tight">Welcome Back</h1>
+          <p className="text-[#846b74] text-base font-medium">
             Don't have an account?{' '}
-            <Link href="/" style={{ color: '#e11d48', fontWeight: 700, textDecoration: 'none' }}>Sign Up</Link>
+            <Link href="/" className="text-[#e11d48] font-bold hover:underline">Sign Up</Link>
           </p>
         </div>
 
         {/* Card */}
-        <div style={{ background: '#fff', borderRadius: '28px', padding: '32px', boxShadow: '0 8px 40px rgba(235,215,220,0.6)', border: '1px solid #faeef2' }}>
-          {error && <div style={{ background: '#fceef3', color: '#e11d48', fontWeight: 700, fontSize: '15px', padding: '14px', borderRadius: '12px', marginBottom: '20px' }}>{error}</div>}
+        <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_12px_40px_rgba(235,215,220,0.7)] border border-[#faeef2]">
+          {error && <div className="bg-[#fceef3] text-[#e11d48] font-bold text-sm p-4 rounded-xl mb-6">{error}</div>}
 
           {step === 1 ? (
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <form onSubmit={handleLogin} className="flex flex-col gap-5">
               <div>
-                <label style={{ display: 'block', fontSize: '15px', fontWeight: 700, color: '#2b101c', marginBottom: '8px' }}>Phone Number</label>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#bda9b1', fontSize: '18px' }}>📱</div>
-                  <input style={inputStyle} type="tel" required value={phone} onChange={e => setPhone(e.target.value)} placeholder="10-digit phone number" />
+                <label className="block text-sm font-bold text-[#2b101c] mb-2">Phone Number</label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">📱</div>
+                  <input 
+                    className="w-full pl-12 pr-4 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors"
+                    type="tel" 
+                    required 
+                    value={phone} 
+                    onChange={e => setPhone(e.target.value)} 
+                    placeholder="10-digit phone number" 
+                  />
                 </div>
               </div>
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '15px', fontWeight: 700, color: '#2b101c' }}>Password</label>
-                  <Link href="/forgot-password" style={{ fontSize: '13px', fontWeight: 700, color: '#e11d48', textDecoration: 'none' }}>Forgot password?</Link>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-sm font-bold text-[#2b101c]">Password</label>
+                  <Link href="/forgot-password" size="sm" className="text-xs font-bold text-[#e11d48] hover:underline">Forgot password?</Link>
                 </div>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#bda9b1', fontSize: '18px' }}>🔒</div>
-                  <input style={inputStyle} type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password" />
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">🔒</div>
+                  <input 
+                    className="w-full pl-12 pr-4 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors"
+                    type="password" 
+                    required 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    placeholder="Your password" 
+                  />
                 </div>
               </div>
-              <button type="submit" disabled={loading} style={{ width: '100%', padding: '17px', background: 'linear-gradient(to right,#e11d48,#f97316)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '18px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Outfit, sans-serif', boxShadow: '0 4px 16px rgba(225,29,72,0.3)' }}>
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full py-4.5 bg-gradient-to-r from-[#e11d48] to-[#f97316] text-white rounded-2xl text-lg font-extrabold cursor-pointer shadow-xl shadow-pink-200/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+              >
                 {loading ? 'Authenticating...' : 'Log In →'}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleVerifyOTP} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              <p style={{ textAlign: 'center', color: '#846b74', fontSize: '15px', fontWeight: 500, margin: '0 0 10px' }}>
+            <form onSubmit={handleVerifyOTP} className="flex flex-col gap-6">
+              <p className="text-center text-[#846b74] text-sm font-medium">
                 Enter the 4-digit code sent to your email
               </p>
               <div>
                 <input 
-                  style={{ ...inputStyle, paddingLeft: '14px', textAlign: 'center', fontSize: '24px', letterSpacing: '8px', fontWeight: 900 }} 
+                  className="w-full py-5 border-2 border-[#f0dee6] rounded-2xl text-3xl font-black text-[#2b101c] text-center tracking-[0.5em] focus:border-[#e11d48] outline-none transition-colors"
                   type="text" 
                   maxLength={4}
                   required 
                   value={otp} 
                   onChange={e => setOtp(e.target.value)} 
-                  placeholder="0 0 0 0" 
+                  placeholder="0000" 
                 />
               </div>
-              <button type="submit" disabled={loading} style={{ width: '100%', padding: '17px', background: '#2b101c', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '18px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Outfit, sans-serif' }}>
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full py-4.5 bg-[#2b101c] text-white rounded-2xl text-lg font-extrabold cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70"
+              >
                 {loading ? 'Verifying...' : 'Verify & Login ✓'}
               </button>
-              <button type="button" onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: '#e11d48', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
+              <button 
+                type="button" 
+                onClick={() => setStep(1)} 
+                className="text-[#e11d48] font-bold text-sm hover:underline"
+              >
                 Change Number
               </button>
             </form>
           )}
 
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-             <Link href="/driver/login" style={{ fontSize: '14px', color: '#846b74', fontWeight: 700, textDecoration: 'none' }}>Are you a Driver? <span style={{ color: '#e11d48' }}>Login here</span></Link>
+          <div className="mt-8 text-center">
+             <Link href="/driver/login" className="text-sm text-[#846b74] font-bold hover:underline">
+               Are you a Driver? <span className="text-[#e11d48]">Login here</span>
+             </Link>
           </div>
         </div>
       </div>
@@ -147,7 +174,7 @@ function LoginForm() {
 
 export default function Login() {
   return (
-    <Suspense fallback={<p style={{ padding: '40px', color: '#e11d48', fontWeight: 700, fontFamily: 'Outfit' }}>Loading...</p>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-[#e11d48] font-bold">Loading...</div>}>
       <LoginForm />
     </Suspense>
   );

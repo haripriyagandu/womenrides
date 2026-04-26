@@ -14,19 +14,34 @@ interface MapProps {
 }
 
 // 🛡️ Helper to ensure coordinates are valid numbers to prevent Leaflet runtime errors
-const isValidCoord = (obj: any) => obj && typeof obj.lat === 'number' && typeof obj.lng === 'number' && !isNaN(obj.lat) && !isNaN(obj.lng);
+const isValidCoord = (obj: any) => {
+  if (!obj) return false;
+  const lat = typeof obj.lat === 'string' ? parseFloat(obj.lat) : obj.lat;
+  const lng = typeof obj.lng === 'string' ? parseFloat(obj.lng) : obj.lng;
+  return (
+    typeof lat === 'number' && 
+    typeof lng === 'number' && 
+    !isNaN(lat) && 
+    !isNaN(lng) && 
+    isFinite(lat) && 
+    isFinite(lng) &&
+    lat !== 0 && lng !== 0 // 0,0 is usually a sign of bad data in this app's context
+  );
+};
 
 // 🛵 Simulated Driver Marker Component
 function NearbyDrivers({ center }: { center: { lat: number, lng: number } }) {
   const [drivers, setDrivers] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!isValidCoord(center)) return;
+
     // Generate initial ghost drivers near the pickup/center
     const initial = Array.from({ length: 6 }).map((_, i) => ({
       id: i,
       lat: center.lat + (Math.random() - 0.5) * 0.02,
       lng: center.lng + (Math.random() - 0.5) * 0.02,
-      rotation: 0 // Set to 0 to prevent 'sleepy' look
+      rotation: 0 
     }));
     setDrivers(initial);
 
@@ -52,7 +67,7 @@ function NearbyDrivers({ center }: { center: { lat: number, lng: number } }) {
 
   return (
     <>
-      {drivers.map(d => (
+      {drivers.filter(d => !isNaN(d.lat) && !isNaN(d.lng)).map(d => (
         <Marker key={d.id} position={[d.lat, d.lng]} icon={bikeIcon(d.rotation)} opacity={0.7} />
       ))}
     </>
@@ -65,22 +80,22 @@ function MapController({ pickupObj, dropObj, driverCoords }: MapProps) {
 
   useEffect(() => {
     if (!map) return;
-    const points: [number, number][] = [];
-    if (isValidCoord(driverCoords)) points.push([driverCoords.lat, driverCoords.lng]);
-    if (isValidCoord(pickupObj)) points.push([pickupObj.lat, pickupObj.lng]);
-    if (isValidCoord(dropObj)) points.push([dropObj.lat, dropObj.lng]);
+    try {
+      const points: [number, number][] = [];
+      if (isValidCoord(driverCoords)) points.push([driverCoords.lat, driverCoords.lng]);
+      if (isValidCoord(pickupObj)) points.push([pickupObj.lat, pickupObj.lng]);
+      if (isValidCoord(dropObj)) points.push([dropObj.lat, dropObj.lng]);
 
-    if (points.length > 0) {
-      try {
+      if (points.length > 0) {
         if (points.length === 1) {
           map.flyTo(points[0] as L.LatLngExpression, 15, { duration: 1.5 });
         } else {
           const bounds = L.latLngBounds(points as L.LatLngExpression[]);
           map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16, animate: true, duration: 1 });
         }
-      } catch (e) {
-        console.warn("Map animation failed safely:", e);
       }
+    } catch (e) {
+      console.warn("Map control failed safely:", e);
     }
   }, [driverCoords, pickupObj, dropObj, map]);
 
@@ -90,7 +105,7 @@ function MapController({ pickupObj, dropObj, driverCoords }: MapProps) {
 // 🗺️ Main Component
 const InteractiveMap = memo(function InteractiveMap({ pickupObj, dropObj, driverCoords, searching }: MapProps) {
   const [position] = useState<[number, number]>([17.4065, 78.4772]); // Default Hyderabad
-  const [animatedCoords, setAnimatedCoords] = useState<any>(driverCoords);
+  const [animatedCoords, setAnimatedCoords] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -99,9 +114,9 @@ const InteractiveMap = memo(function InteractiveMap({ pickupObj, dropObj, driver
 
   // Smooth Glide Animation for Driver
   useEffect(() => {
-    if (!driverCoords) return;
-    if (!animatedCoords) {
-      setAnimatedCoords(driverCoords);
+    if (!isValidCoord(driverCoords)) return;
+    if (!isValidCoord(animatedCoords)) {
+      setAnimatedCoords({ lat: driverCoords.lat, lng: driverCoords.lng });
       return;
     }
 
@@ -118,15 +133,19 @@ const InteractiveMap = memo(function InteractiveMap({ pickupObj, dropObj, driver
       const currentLat = startLat + (driverCoords.lat - startLat) * progress;
       const currentLng = startLng + (driverCoords.lng - startLng) * progress;
       
-      setAnimatedCoords({ lat: currentLat, lng: currentLng });
+      if (!isNaN(currentLat) && !isNaN(currentLng) && isFinite(currentLat) && isFinite(currentLng)) {
+        setAnimatedCoords({ lat: currentLat, lng: currentLng });
+      }
 
-      if (progress < 1) {
+      if (progress < 1 && isValidCoord(driverCoords)) {
         frameId = requestAnimationFrame(animate);
       }
     };
     
-    frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
+    if (isValidCoord(driverCoords)) {
+      frameId = requestAnimationFrame(animate);
+    }
+    return () => { if (frameId) cancelAnimationFrame(frameId); };
   }, [driverCoords]);
 
   const driverIcon = useMemo(() => new L.Icon({
@@ -148,12 +167,16 @@ const InteractiveMap = memo(function InteractiveMap({ pickupObj, dropObj, driver
       if (!isValidCoord(start) || !isValidCoord(end)) return setter(null);
       try {
         const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?geometries=geojson`);
+        if (!res.ok) throw new Error("OSRM down");
         const data = await res.json();
         if (data.routes?.[0]) {
           const coords = data.routes[0].geometry.coordinates.map((c: any) => [c[1], c[0]]);
           setter(coords);
         }
-      } catch (e) { console.error("Routing error:", e); }
+      } catch (e) { 
+        // Silently fail - the map will auto-fallback to a dashed straight line
+        setter(null);
+      }
     };
 
     fetchRoute(driverCoords, pickupObj, setDriverRoute);
@@ -220,17 +243,43 @@ const InteractiveMap = memo(function InteractiveMap({ pickupObj, dropObj, driver
         )}
 
         {/* Driver-to-Pickup Route */}
-        {driverRoute ? (
-          <Polyline positions={driverRoute} color="#3b82f6" weight={5} opacity={0.8} />
+        {driverRoute && driverRoute.length > 1 ? (
+          <Polyline 
+            positions={driverRoute.filter(p => p && typeof p[0] === 'number' && !isNaN(p[0]) && isFinite(p[0]) && typeof p[1] === 'number' && !isNaN(p[1]) && isFinite(p[1]))} 
+            color="#3b82f6" 
+            weight={5} 
+            opacity={0.8} 
+          />
         ) : (isValidCoord(animatedCoords) && isValidCoord(pickupObj) && (
-          <Polyline positions={[[animatedCoords.lat, animatedCoords.lng], [pickupObj.lat, pickupObj.lng]]} color="#3b82f6" weight={3} dashArray="5, 10" />
+          <Polyline 
+            positions={[
+              [animatedCoords.lat, animatedCoords.lng] as [number, number], 
+              [pickupObj.lat, pickupObj.lng] as [number, number]
+            ].filter(p => p && typeof p[0] === 'number' && !isNaN(p[0]) && isFinite(p[0]) && typeof p[1] === 'number' && !isNaN(p[1]) && isFinite(p[1]))} 
+            color="#3b82f6" 
+            weight={3} 
+            dashArray="5, 10" 
+          />
         ))}
 
         {/* Pickup-to-Drop Route */}
-        {tripRoute ? (
-          <Polyline positions={tripRoute} color="#e11d48" weight={5} opacity={0.8} />
+        {tripRoute && tripRoute.length > 1 ? (
+          <Polyline 
+            positions={tripRoute.filter(p => p && typeof p[0] === 'number' && !isNaN(p[0]) && isFinite(p[0]) && typeof p[1] === 'number' && !isNaN(p[1]) && isFinite(p[1]))} 
+            color="#10b981" 
+            weight={6} 
+            opacity={0.9} 
+          />
         ) : (isValidCoord(pickupObj) && isValidCoord(dropObj) && (
-          <Polyline positions={[[pickupObj.lat, pickupObj.lng], [dropObj.lat, dropObj.lng]]} color="#e11d48" weight={4} dashArray="10, 10" />
+          <Polyline 
+            positions={[
+              [pickupObj.lat, pickupObj.lng] as [number, number], 
+              [dropObj.lat, dropObj.lng] as [number, number]
+            ].filter(p => p && typeof p[0] === 'number' && !isNaN(p[0]) && isFinite(p[0]))} 
+            color="#e11d48" 
+            weight={4} 
+            dashArray="10, 10" 
+          />
         ))}
       </MapContainer>
     </div>

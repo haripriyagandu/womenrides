@@ -41,69 +41,70 @@ export default function HistoryPage() {
 
   return (
     <RoleGuard role="customer">
-      <div style={{ minHeight: '100vh', background: '#fcf9f9', fontFamily: 'Outfit, sans-serif' }}>
+      <div className="min-h-screen bg-[#fdfafb] font-['Outfit',sans-serif]">
         {/* Header */}
-        <header style={{ padding: '20px 40px', background: '#fff', borderBottom: '1px solid #faeef2', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50 }}>
-          <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <h1 style={{ color: '#e11d48', margin: 0, fontSize: '24px', fontWeight: 900 }}>SheRide 🛵</h1>
+        <header className="sticky top-0 z-50 px-6 sm:px-10 py-5 bg-white border-b border-rose-50 flex justify-between items-center shadow-sm">
+          <Link href="/dashboard" className="no-underline">
+            <h1 className="text-xl sm:text-2xl font-black text-[#e11d48]">SheRide</h1>
           </Link>
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <Link href="/dashboard" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: 600 }}>Home</Link>
-            <Link href="/profile" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: 600 }}>Profile</Link>
-            <button onClick={logout} style={{ padding: '10px 20px', borderRadius: '12px', border: '1.5px solid #faeef2', background: '#fff', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
+          <div className="flex gap-4 sm:gap-6 items-center">
+            <Link href="/dashboard" className="text-sm font-black text-[#e11d48] no-underline">Home</Link>
+            <Link href="/profile" className="hidden sm:block text-sm font-black text-slate-500 hover:text-[#e11d48] transition-colors no-underline">Profile</Link>
+            <button onClick={logout} className="px-5 py-2.5 rounded-xl border border-rose-50 text-sm font-black text-[#ef4444] hover:bg-rose-50 transition-colors">Logout</button>
           </div>
         </header>
 
-        <main style={{ maxWidth: '800px', margin: '40px auto', padding: '0 20px' }}>
-          <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', border: '1px solid #faeef2', boxShadow: '0 10px 30px rgba(225,29,72,0.04)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '28px', fontWeight: 900, margin: 0, color: '#1f2937' }}>My Rides</h2>
-              <span style={{ background: '#ffe4e6', color: '#e11d48', padding: '6px 14px', borderRadius: '12px', fontSize: '14px', fontWeight: 800 }}>
+        <main className="max-w-3xl mx-auto px-6 py-10 sm:py-14">
+          <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl shadow-rose-900/5 border border-rose-50">
+            <div className="flex justify-between items-center mb-10">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0f172a]">My Rides</h2>
+              <span className="bg-rose-50 text-[#e11d48] px-4 py-1.5 rounded-xl text-xs font-black tracking-widest uppercase">
                 Total: {history.length}
               </span>
             </div>
 
             {loadingHistory ? (
-              <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                 <p style={{ fontWeight: 700, color: '#64748b' }}>Loading your trip history...</p>
+              <div className="text-center py-20 animate-pulse">
+                 <p className="font-black text-slate-300">Loading your trip history...</p>
               </div>
             ) : history.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '80px 0' }}>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>🛵</div>
-                <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#1f2937', margin: '0 0 8px' }}>No trips found yet</h3>
-                <p style={{ color: '#64748b', marginBottom: '32px', maxWidth: '300px', margin: '0 auto 32px' }}>Your completed SheRide journeys will appear here once they are finished.</p>
-                <Link href="/dashboard" style={{ background: '#111827', color: '#fff', padding: '16px 36px', borderRadius: '16px', textDecoration: 'none', fontWeight: 800, fontSize: '15px' }}>Book Your First Ride</Link>
+              <div className="text-center py-20">
+                <div className="text-6xl mb-6">🛵</div>
+                <h3 className="text-2xl font-black text-[#0f172a] mb-2">No trips found yet</h3>
+                <p className="text-slate-400 font-bold mb-10 max-w-[280px] mx-auto leading-relaxed">Your completed SheRide journeys will appear here once they are finished.</p>
+                <Link href="/dashboard" className="inline-block bg-[#0f172a] text-white px-10 py-4.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-800 transition-all active:scale-95 no-underline">Book Your First Ride</Link>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="grid grid-cols-1 gap-6">
                 {history.map((ride, idx) => (
-                  <div key={idx} style={{ padding: '24px', borderRadius: '24px', border: '1.5px solid #fcf9f9', background: '#fff', transition: '0.2s', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '18px', alignItems: 'center' }}>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <span style={{ background: '#fff1f2', color: '#e11d48', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 800 }}>{ride.rideType}</span>
-                        <span style={{ color: '#9ca3af', fontSize: '12px', fontWeight: 600 }}>#{ride._id.slice(-6).toUpperCase()}</span>
+                  <div key={idx} className="p-6 sm:p-8 rounded-[2rem] border-2 border-slate-50 bg-white hover:border-rose-100 hover:shadow-xl hover:shadow-rose-900/5 transition-all group">
+                    <div className="flex justify-between items-center mb-6">
+                      <div className="flex items-center gap-3">
+                        <span className="bg-rose-50 text-[#e11d48] px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">{ride.rideType}</span>
+                        <span className="text-[10px] font-bold text-slate-300">#{ride._id.slice(-6).toUpperCase()}</span>
                       </div>
-                      <span style={{ fontWeight: 900, color: '#1f2937', fontSize: '18px' }}>{ride.fare}</span>
+                      <span className="text-xl font-black text-[#0f172a]">{ride.fare}</span>
                     </div>
                     
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', position: 'relative', paddingLeft: '16px', borderLeft: '2px dashed #f1f5f9', marginLeft: '6px' }}>
-                      <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '-22px', top: '4px', width: '10px', height: '10px', background: '#22c55e', borderRadius: '50%', border: '2px solid #fff' }}></span>
-                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>{ride.pickupLocation?.address || 'Pickup Point'}</p>
+                    <div className="space-y-4 mb-8 relative pl-6">
+                      <div className="absolute left-1.5 top-1 bottom-1 w-0.5 bg-slate-100 dashed-border"></div>
+                      <div className="relative">
+                        <span className="absolute -left-[22px] top-1.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm ring-4 ring-green-50"></span>
+                        <p className="text-sm font-black text-[#0f172a] leading-tight">{ride.pickupLocation?.address || 'Pickup Point'}</p>
                       </div>
-                      <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '-22px', top: '4px', width: '10px', height: '10px', background: '#e11d48', borderRadius: '50%', border: '2px solid #fff' }}></span>
-                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>{ride.dropLocation?.address || 'Destination'}</p>
+                      <div className="relative">
+                        <span className="absolute -left-[22px] top-1.5 w-3 h-3 bg-[#e11d48] rounded-full border-2 border-white shadow-sm ring-4 ring-rose-50"></span>
+                        <p className="text-sm font-black text-[#0f172a] leading-tight">{ride.dropLocation?.address || 'Destination'}</p>
                       </div>
                     </div>
 
-                    <div style={{ marginTop: '20px', borderTop: '1.5px solid #fcf9f9', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '16px' }}>📅</span>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>{new Date(ride.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    <div className="pt-6 border-t border-slate-50 flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg grayscale group-hover:grayscale-0 transition-all">📅</span>
+                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{new Date(ride.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#22c55e' }}>
-                         <span style={{ fontWeight: 900, fontSize: '13px' }}>Completed ✓</span>
+                      <div className="flex items-center gap-2 text-green-600">
+                         <span className="text-[11px] font-black uppercase tracking-widest">Completed ✓</span>
                       </div>
                     </div>
                   </div>

@@ -111,118 +111,130 @@ export default function ProfilePage() {
 
   return (
     <RoleGuard role="customer">
-      <div style={{ minHeight: '100vh', background: '#fcf9f9', fontFamily: 'Outfit, sans-serif' }}>
+      <div className="min-h-screen bg-[#fdfafb] font-['Outfit',sans-serif]">
         {/* Header */}
-        <header style={{ padding: '20px 40px', background: '#fff', borderBottom: '1px solid #faeef2', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50 }}>
-          <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <h1 style={{ color: '#e11d48', margin: 0, fontSize: '24px', fontWeight: 900 }}>SheRide 🛵</h1>
+        <header className="sticky top-0 z-50 px-6 sm:px-10 py-5 bg-white border-b border-rose-50 flex justify-between items-center shadow-sm">
+          <Link href="/dashboard" className="no-underline">
+            <h1 className="text-xl sm:text-2xl font-black text-[#e11d48]">SheRide</h1>
           </Link>
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <Link href="/dashboard" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: 600 }}>Home</Link>
-            <Link href="/history" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: 600 }}>My Rides</Link>
-            <button onClick={logout} style={{ padding: '10px 20px', borderRadius: '12px', border: '1.5px solid #faeef2', background: '#fff', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
+          <div className="flex gap-4 sm:gap-6 items-center">
+            <Link href="/dashboard" className="text-sm font-black text-[#e11d48] no-underline">Home</Link>
+            <Link href="/history" className="hidden sm:block text-sm font-black text-slate-500 hover:text-[#e11d48] transition-colors no-underline">My Rides</Link>
+            <button onClick={logout} className="px-5 py-2.5 rounded-xl border border-rose-50 text-sm font-black text-[#ef4444] hover:bg-rose-50 transition-colors">Logout</button>
           </div>
         </header>
 
-        <main style={{ maxWidth: '600px', margin: '40px auto', padding: '0 20px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+        <main className="max-w-2xl mx-auto px-6 py-10 sm:py-14">
+            <div className="flex flex-col gap-10">
 
               {/* User Identity Card */}
-              <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', border: '1px solid #faeef2', boxShadow: '0 10px 30px rgba(225,29,72,0.04)', position: 'relative' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%)', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px' }}>
+              <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl shadow-rose-900/5 border border-rose-50 relative overflow-hidden">
+                <div className="text-center">
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 mx-auto mb-6 flex items-center justify-center text-5xl shadow-inner border-4 border-white">
                     👩
                   </div>
                   
                   {!isEditingProfile ? (
-                    <>
-                      <h2 style={{ fontSize: '26px', fontWeight: 900, margin: '0 0 4px', color: '#1f2937' }}>{authUser?.name}</h2>
-                      <p style={{ color: '#6b7280', fontWeight: 500, margin: '0 0 24px' }}>{authUser?.phone}</p>
-                      <button onClick={() => setIsEditingProfile(true)} style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', color: '#e11d48', fontWeight: 800, cursor: 'pointer' }}>Edit Profile</button>
-                    </>
+                    <div className="mb-8">
+                      <h2 className="text-3xl font-black text-[#0f172a] mb-1">{authUser?.name}</h2>
+                      <p className="text-lg font-bold text-slate-400">{authUser?.phone}</p>
+                      <button onClick={() => setIsEditingProfile(true)} className="absolute top-8 right-8 text-sm font-black text-[#e11d48] hover:underline">Edit</button>
+                    </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '300px', margin: '0 auto 24px' }}>
-                       <input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Your Name" style={{ padding: '12px 16px', borderRadius: '12px', border: '1.5px solid #faeef2', background: '#fcf9f9', outline: 'none', fontWeight: 600, fontFamily: 'Outfit', textAlign: 'center' }} />
-                       <input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone Number" style={{ padding: '12px 16px', borderRadius: '12px', border: '1.5px solid #faeef2', background: '#fcf9f9', outline: 'none', fontWeight: 600, fontFamily: 'Outfit', textAlign: 'center' }} />
-                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                          <button onClick={() => setIsEditingProfile(false)} style={{ padding: '10px 20px', borderRadius: '12px', background: '#f1f5f9', color: '#64748b', fontWeight: 700, border: 'none', cursor: 'pointer' }}>Cancel</button>
-                          <button onClick={saveProfile} style={{ padding: '10px 20px', borderRadius: '12px', background: '#111827', color: '#fff', fontWeight: 700, border: 'none', cursor: 'pointer' }}>Save</button>
+                    <div className="flex flex-col gap-4 max-w-xs mx-auto mb-8 animate-in slide-in-from-top duration-300">
+                       <input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Your Name" className="w-full px-6 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-[#e11d48] focus:bg-white outline-none font-black text-center transition-all" />
+                       <input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone Number" className="w-full px-6 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-[#e11d48] focus:bg-white outline-none font-black text-center transition-all" />
+                       <div className="flex gap-3 justify-center">
+                          <button onClick={() => setIsEditingProfile(false)} className="px-8 py-3.5 rounded-2xl bg-slate-100 text-slate-500 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                          <button onClick={saveProfile} className="px-8 py-3.5 rounded-2xl bg-[#0f172a] text-white font-black shadow-lg">Save</button>
                        </div>
                     </div>
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', borderTop: '1.5px solid #fcf9f9', paddingTop: '24px' }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <p style={{ margin: '0 0 4px', color: '#9ca3af', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Rating</p>
-                    <p style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: '#eab308' }}>{(authUser as any)?.trustScore || 5.0} ⭐</p>
+                <div className="grid grid-cols-2 gap-6 border-t border-slate-50 pt-8">
+                  <div className="text-center border-r border-slate-50">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Trust Score</p>
+                    <p className="text-2xl font-black text-[#eab308]">{(authUser as any)?.trustScore || 5.0} <span className="text-xl">⭐</span></p>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <p style={{ margin: '0 0 4px', color: '#9ca3af', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Total Trips</p>
-                    <p style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: '#1f2937' }}>{historyCount !== null ? historyCount : (authUser?.totalRides || 0)}</p>
+                  <div className="text-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Total Trips</p>
+                    <p className="text-2xl font-black text-[#0f172a]">{historyCount !== null ? historyCount : (authUser?.totalRides || 0)}</p>
                   </div>
                 </div>
               </div>
 
               {/* Emergency Contacts Card */}
-              <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', border: '1px solid #faeef2', boxShadow: '0 10px 30px rgba(225,29,72,0.04)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 0 8px' }}>
-                  <h3 style={{ fontSize: '20px', fontWeight: 900, margin: 0, color: '#1f2937' }}>Emergency Contacts</h3>
+              <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl shadow-rose-900/5 border border-rose-50">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+                  <div>
+                    <h3 className="text-2xl font-black text-[#0f172a] mb-1">Emergency Contacts</h3>
+                    <p className="text-sm font-bold text-slate-400">Add up to 5 trusted people</p>
+                  </div>
                   {!editingContacts ? (
-                    <button onClick={() => setEditingContacts(true)} style={{ background: 'none', border: 'none', color: '#e11d48', fontWeight: 800, cursor: 'pointer' }}>Edit Settings</button>
+                    <button onClick={() => setEditingContacts(true)} className="text-sm font-black text-[#e11d48] hover:underline text-left sm:text-right">Edit Settings</button>
                   ) : (
-                    <button onClick={saveContacts} style={{ background: '#111827', border: 'none', color: '#fff', padding: '8px 20px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer' }}>Save Changes</button>
+                    <button onClick={saveContacts} className="px-6 py-3 bg-[#0f172a] text-white text-sm font-black rounded-2xl shadow-lg">Save Changes</button>
                   )}
                 </div>
 
-                <p style={{ color: '#846b74', fontSize: '14px', fontWeight: 500, margin: '0 0 24px', lineHeight: 1.5 }}>
-                  Add people you trust. They'll be notified instantly if you trigger a safety alert during a journey.
+                <p className="text-slate-500 font-medium text-sm leading-relaxed mb-8">
+                  These people will be notified instantly if you trigger an SOS during your journey. Your safety is our priority.
                 </p>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="space-y-6">
                   {contacts.length === 0 && !editingContacts && (
-                    <div style={{ textAlign: 'center', padding: '40px 0', background: '#fcf9f9', borderRadius: '20px', border: '2px dashed #faeef2' }}>
-                      <p style={{ color: '#9ca3af', fontWeight: 600, margin: 0 }}>No contacts added yet</p>
+                    <div className="text-center py-14 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
+                      <p className="text-slate-400 font-black">No contacts added yet</p>
                     </div>
                   )}
 
                   {contacts.map((contact, idx) => (
-                    <div key={idx} style={{ background: editingContacts ? '#f9fafb' : '#fff5f6', padding: '20px', borderRadius: '20px', border: editingContacts ? '1.5px solid #f3f4f6' : '1.5px solid #fceef3', position: 'relative' }}>
+                    <div key={idx} className={`p-6 sm:p-8 rounded-[2rem] border-2 transition-all ${
+                      editingContacts ? 'bg-slate-50 border-slate-100' : 'bg-rose-50/50 border-rose-100/50'
+                    }`}>
                       {editingContacts ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <p style={{ fontWeight: 800, color: '#e11d48', fontSize: '12px', margin: 0, textTransform: 'uppercase' }}>Contact {idx + 1}</p>
-                            <button onClick={() => removeContact(idx)} style={{ color: '#ef4444', background: '#fee2e2', width: '24px', height: '24px', borderRadius: '50%', border: 'none', fontWeight: 900, cursor: 'pointer' }}>×</button>
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <p className="text-[10px] font-black text-[#e11d48] uppercase tracking-widest">CONTACT {idx + 1}</p>
+                            <button onClick={() => removeContact(idx)} className="w-8 h-8 bg-rose-100 text-[#e11d48] rounded-full flex items-center justify-center font-black">×</button>
                           </div>
-                          <input placeholder="Full Name" value={contact.name} onChange={e => handleContactChange(idx, 'name', e.target.value)}
-                            style={{ padding: '12px 14px', borderRadius: '12px', border: '2px solid #f0dee6', background: '#fff', fontWeight: 600, fontFamily: 'Outfit', outline: 'none' }} />
-                          <input placeholder="Phone Number" value={contact.phone} onChange={e => handleContactChange(idx, 'phone', e.target.value)}
-                            style={{ padding: '12px 14px', borderRadius: '12px', border: '2px solid #f0dee6', background: '#fff', fontWeight: 600, fontFamily: 'Outfit', outline: 'none' }} />
-                          <input placeholder="Email Address" value={contact.email} onChange={e => handleContactChange(idx, 'email', e.target.value)}
-                            style={{ padding: '12px 14px', borderRadius: '12px', border: '2px solid #f0dee6', background: '#fff', fontWeight: 600, fontFamily: 'Outfit', outline: 'none' }} />
-                          <select value={contact.relation} onChange={e => handleContactChange(idx, 'relation', e.target.value)}
-                            style={{ padding: '12px 14px', borderRadius: '12px', border: '2px solid #f0dee6', background: '#fff', fontWeight: 600, fontFamily: 'Outfit', outline: 'none', cursor: 'pointer' }}>
-                            {relations.map(r => <option key={r} value={r}>{r}</option>)}
-                          </select>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input placeholder="Full Name" value={contact.name} onChange={e => handleContactChange(idx, 'name', e.target.value)}
+                              className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-100 bg-white focus:border-[#e11d48] outline-none font-bold text-sm" />
+                            <input placeholder="Phone Number" value={contact.phone} onChange={e => handleContactChange(idx, 'phone', e.target.value)}
+                              className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-100 bg-white focus:border-[#e11d48] outline-none font-bold text-sm" />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input placeholder="Email Address" value={contact.email} onChange={e => handleContactChange(idx, 'email', e.target.value)}
+                              className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-100 bg-white focus:border-[#e11d48] outline-none font-bold text-sm" />
+                            <select value={contact.relation} onChange={e => handleContactChange(idx, 'relation', e.target.value)}
+                              className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-100 bg-white focus:border-[#e11d48] outline-none font-black text-sm cursor-pointer appearance-none">
+                              {relations.map(r => <option key={r} value={r}>{r}</option>)}
+                            </select>
+                          </div>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="flex justify-between items-center">
                           <div>
-                            <p style={{ margin: '0 0 4px', fontWeight: 800, color: '#374151', fontSize: '16px' }}>{contact.name}</p>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                              <span style={{ fontSize: '13px', background: '#fff', padding: '2px 8px', borderRadius: '6px', color: '#e11d48', fontWeight: 700, border: '1px solid #faeef2' }}>{contact.relation}</span>
-                              <p style={{ margin: 0, fontWeight: 600, color: '#6b7280', fontSize: '14px' }}>{contact.phone}</p>
-                              {contact.email && <p style={{ margin: 0, fontWeight: 600, color: '#9ca3af', fontSize: '13px' }}>• {contact.email}</p>}
+                            <div className="flex items-center gap-3 mb-2">
+                              <p className="font-black text-[#0f172a] text-lg leading-none">{contact.name}</p>
+                              <span className="px-2.5 py-1 bg-white border border-rose-100 rounded-lg text-[9px] font-black text-[#e11d48] uppercase tracking-wider">{contact.relation}</span>
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-slate-500 font-bold text-sm">
+                              <p>📞 {contact.phone}</p>
+                              {contact.email && <p className="hidden sm:block text-slate-300">•</p>}
+                              {contact.email && <p>✉️ {contact.email}</p>}
                             </div>
                           </div>
-                          <div style={{ fontSize: '20px' }}>🛡️</div>
+                          <div className="text-2xl opacity-50 grayscale">🛡️</div>
                         </div>
                       )}
                     </div>
                   ))}
 
                   {editingContacts && contacts.length < 5 && (
-                    <button onClick={addContact} style={{ width: '100%', padding: '14px', borderRadius: '16px', border: '2px dashed #fca5a5', background: 'none', color: '#dc2626', fontWeight: 800, cursor: 'pointer', transition: '0.2s' }}>+ Add Another Contact</button>
+                    <button onClick={addContact} className="w-full py-5 rounded-[2rem] border-2 border-dashed border-rose-200 text-[#e11d48] font-black text-sm hover:bg-rose-50 transition-all">+ Add Another Contact</button>
                   )}
                 </div>
               </div>

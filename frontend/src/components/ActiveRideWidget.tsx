@@ -41,67 +41,85 @@ export default function ActiveRideWidget({ rides, unreadCount = 0 }: { rides: an
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '24px',
-      right: '24px',
-      zIndex: 1000,
-      transform: minimized ? 'translateY(0)' : 'translateY(0)',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    }}>
-      {minimized ? (
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setMinimized(false)}
-            style={{
-              background: 'linear-gradient(135deg, #e11d48, #be123c)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '30px',
-              padding: '12px 24px',
-              fontWeight: 800,
-              fontSize: '14px',
-              boxShadow: '0 10px 25px rgba(225, 29, 72, 0.4)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontFamily: 'Outfit, sans-serif'
-            }}>
-            <span style={{ fontSize: '18px' }}>🛵</span>
-            {activeRides.length} Active {activeRides.length === 1 ? 'Ride' : 'Rides'}
-          </button>
-          {unreadCount > 0 && (
-            <div style={{
-              position: 'absolute',
-              top: '-8px',
-              right: '-8px',
-              background: '#ef4444',
-              color: '#fff',
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              fontWeight: 900,
-              border: '3px solid #fff',
-              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
-            }}>
-              {unreadCount}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div style={{
-          background: '#fff',
-          borderRadius: '24px',
-          width: '320px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-          overflow: 'hidden',
-          fontFamily: 'Outfit, sans-serif'
-        }}>
+    <>
+      <style jsx>{`
+        .active-ride-container {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 1000;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .active-ride-card {
+          background: #fff;
+          border-radius: 24px;
+          width: 320px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+          overflow: hidden;
+          font-family: 'Outfit', sans-serif;
+        }
+        @media (max-width: 768px) {
+          .active-ride-container {
+            bottom: 0 !important;
+            right: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+          }
+          .active-ride-card {
+            width: 100% !important;
+            border-radius: 24px 24px 0 0 !important;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+          }
+        }
+      `}</style>
+
+      <div className="active-ride-container">
+        {minimized ? (
+          <div style={{ position: 'relative', padding: '16px' }}>
+            <button
+              onClick={() => setMinimized(false)}
+              style={{
+                background: 'linear-gradient(135deg, #e11d48, #be123c)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '30px',
+                padding: '12px 24px',
+                fontWeight: 800,
+                fontSize: '14px',
+                boxShadow: '0 10px 25px rgba(225, 29, 72, 0.4)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontFamily: 'Outfit, sans-serif'
+              }}>
+              <span style={{ fontSize: '18px' }}>🛵</span>
+              {activeRides.length} Active {activeRides.length === 1 ? 'Ride' : 'Rides'}
+            </button>
+            {unreadCount > 0 && (
+              <div style={{
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+                background: '#ef4444',
+                color: '#fff',
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '12px',
+                fontWeight: 900,
+                border: '3px solid #fff',
+                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+              }}>
+                {unreadCount}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="active-ride-card">
           {/* Header */}
           <div style={{
             background: 'linear-gradient(135deg, #111827, #1f2937)',
@@ -273,23 +291,54 @@ export default function ActiveRideWidget({ rides, unreadCount = 0 }: { rides: an
                   </div>
                 )}
 
-                {(ride.status === 'requested' || ride.status === 'accepted' || ride.status === 'arrived') && (
-                  <button 
-                    onClick={() => {
-                      if (typeof window !== 'undefined') {
-                        const event = new CustomEvent('triggerCancelRide', { detail: ride._id });
-                        window.dispatchEvent(event);
-                      }
-                    }}
-                    style={{ width: '100%', marginTop: '8px', padding: '10px', background: '#fff', color: '#e11d48', border: '1.5px solid #fee2e2', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
-                    Cancel Ride
-                  </button>
+                {(ride.status === 'requested' || ride.status === 'accepted' || ride.status === 'arrived' || ride.status === 'in-transit') && (
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    {ride.rideType === 'SheRide Safe' && ride.status !== 'requested' && (
+                      <button 
+                        onClick={() => {
+                          if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('triggerSOS', { detail: ride._id }));
+                          }
+                        }}
+                        style={{ 
+                          flex: 1, 
+                          padding: '12px', 
+                          background: 'linear-gradient(135deg, #e11d48, #991b1b)', 
+                          color: '#fff', 
+                          border: 'none', 
+                          borderRadius: '12px', 
+                          fontWeight: 900, 
+                          cursor: 'pointer', 
+                          fontSize: '13px',
+                          boxShadow: '0 4px 12px rgba(225, 29, 72, 0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}>
+                        <span>🚨</span> SOS
+                      </button>
+                    )}
+                    {(ride.status === 'requested' || ride.status === 'accepted' || ride.status === 'arrived') && (
+                      <button 
+                        onClick={() => {
+                          if (typeof window !== 'undefined') {
+                            const event = new CustomEvent('triggerCancelRide', { detail: ride._id });
+                            window.dispatchEvent(event);
+                          }
+                        }}
+                        style={{ flex: 1, padding: '12px', background: '#fff', color: '#e11d48', border: '1.5px solid #fee2e2', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
+                        Cancel Ride
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

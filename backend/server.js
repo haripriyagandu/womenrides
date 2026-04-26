@@ -21,7 +21,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['https://womenrides.vercel.app', 'https://womenrides-app.vercel.app'],
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'https://womenrides.vercel.app', 'https://womenrides-app.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
   }

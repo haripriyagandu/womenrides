@@ -69,39 +69,32 @@ export default function ChatOverlay({ rideId, currentUserId, isOpen, onClose, so
   if (!isOpen) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '440px', height: '600px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[5000] flex items-center justify-center sm:p-5">
+      <div className="bg-white sm:rounded-[2.5rem] w-full sm:max-w-md h-full sm:h-[600px] flex flex-col overflow-hidden shadow-2xl shadow-slate-900/10 animate-in slide-in-from-bottom duration-300">
         
         {/* Header */}
-        <div style={{ padding: '24px', background: '#111827', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="p-6 sm:p-8 bg-[#0f172a] text-white flex justify-between items-center">
           <div>
-            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900 }}>Secure Chat 💬</h3>
-            <p style={{ margin: 0, fontSize: '11px', opacity: 0.7, fontWeight: 600 }}>End-to-end encrypted for your safety</p>
+            <h3 className="text-lg sm:text-xl font-black mb-1">Secure Chat 💬</h3>
+            <p className="text-[10px] sm:text-[11px] opacity-60 font-bold uppercase tracking-widest">End-to-end encrypted</p>
           </div>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontWeight: 900 }}>×</button>
+          <button onClick={onClose} className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center font-black transition-colors">×</button>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#f8fafc' }}>
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 bg-slate-50 no-scrollbar">
           {messages.length === 0 ? (
-            <div style={{ textAlign: 'center', margin: 'auto', color: '#94a3b8' }}>
-              <span style={{ fontSize: '40px', display: 'block', marginBottom: '12px' }}>👋</span>
-              <p style={{ fontWeight: 600, fontSize: '14px' }}>Start a safe conversation with your driver/passenger.</p>
+            <div className="text-center my-auto px-10">
+              <span className="text-5xl block mb-6 animate-bounce">👋</span>
+              <p className="font-black text-slate-300 text-sm leading-relaxed italic">Start a safe conversation with your partner.</p>
             </div>
           ) : (
             messages.map((m, i) => (
-              <div key={i} style={{ 
-                alignSelf: m.senderId === currentUserId ? 'flex-end' : 'flex-start',
-                maxWidth: '80%',
-                padding: '12px 18px',
-                borderRadius: m.senderId === currentUserId ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                background: m.senderId === currentUserId ? '#111827' : '#fff',
-                color: m.senderId === currentUserId ? '#fff' : '#111827',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
-                fontSize: '14px',
-                fontWeight: 600,
-                position: 'relative'
-              }}>
+              <div key={i} className={`max-w-[85%] px-5 py-3.5 rounded-3xl text-sm font-black shadow-sm ring-4 ring-white/50 ${
+                m.senderId === currentUserId 
+                ? 'self-end bg-[#0f172a] text-white rounded-tr-none' 
+                : 'self-start bg-white text-[#0f172a] rounded-tl-none'
+              }`}>
                 {m.text}
               </div>
             ))
@@ -109,14 +102,14 @@ export default function ChatOverlay({ rideId, currentUserId, isOpen, onClose, so
         </div>
 
         {/* Input */}
-        <form onSubmit={sendMessage} style={{ padding: '20px', background: '#fff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '12px' }}>
+        <form onSubmit={sendMessage} className="p-5 sm:p-6 bg-white border-t border-slate-100 flex gap-3">
           <input 
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
-            style={{ flex: 1, padding: '14px 20px', borderRadius: '16px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontWeight: 600, fontSize: '14px', outline: 'none' }}
+            className="flex-1 px-6 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-[#e11d48] focus:bg-white outline-none font-black text-sm transition-all placeholder:text-slate-300"
           />
-          <button type="submit" style={{ width: '48px', height: '48px', borderRadius: '16px', border: 'none', background: '#111827', color: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button type="submit" className="w-14 h-14 rounded-2xl bg-[#0f172a] text-white text-xl flex items-center justify-center hover:bg-slate-800 transition-all active:scale-90 shadow-lg shadow-slate-200">
             ➢
           </button>
         </form>

@@ -176,63 +176,69 @@ function SignupWizard() {
 
   // ─── Shared card wrapper ─────────────────────────
   const card = (content: React.ReactNode) => (
-    <div style={{ width: '100%', maxWidth: '460px', margin: '0 auto', paddingTop: '32px', paddingBottom: '40px', paddingLeft: '16px', paddingRight: '16px' }}>
-      <button onClick={() => step > 1 ? setStep(step - 1) : router.push('/')}
-        style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#846b74', fontWeight: 700, fontSize: '17px', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '20px', fontFamily: 'Outfit, sans-serif' }}>
+    <div className="w-full max-w-[480px] mx-auto pt-8 pb-10 px-4">
+      <button 
+        onClick={() => step > 1 ? setStep(step - 1) : router.push('/')}
+        className="flex items-center gap-2 text-[#846b74] font-bold text-lg bg-none border-none cursor-pointer mb-5 hover:text-[#2b101c] transition-colors"
+      >
         ← Back
       </button>
-      <div style={{ background: '#fff', padding: '36px', borderRadius: '28px', boxShadow: '0 8px 40px rgba(235,215,220,0.6)', border: '1px solid #faeef2' }}>
+      <div className="bg-white p-8 sm:p-10 rounded-[2rem] shadow-[0_12px_40px_rgba(235,215,220,0.7)] border border-[#faeef2]">
         {content}
       </div>
     </div>
   );
 
-  const ErrBox = () => error ? <div style={{ background: '#fceef3', color: '#e11d48', fontWeight: 700, fontSize: '15px', padding: '14px', borderRadius: '14px', marginBottom: '18px' }}>{error}</div> : null;
+  const ErrBox = () => error ? <div className="bg-[#fceef3] text-[#e11d48] font-bold text-sm p-4 rounded-2xl mb-5">{error}</div> : null;
 
   // STEP 1: Details
   if (step === 1) return card(
     <form onSubmit={handleSendOTP}>
-      <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#2b101c', marginBottom: '6px', letterSpacing: '-0.5px' }}>Sign Up as {role === 'driver' ? 'Driver' : 'Customer'}</h2>
-      <p style={{ color: '#846b74', fontSize: '17px', fontWeight: 500, marginBottom: '28px' }}>Create your account to get started</p>
+      <h2 className="text-3xl sm:text-4xl font-black text-[#2b101c] mb-1.5 tracking-tight leading-tight">Sign Up as {role === 'driver' ? 'Driver' : 'Customer'}</h2>
+      <p className="text-[#846b74] text-lg font-medium mb-8">Create your account to get started</p>
       <ErrBox />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      <div className="flex flex-col gap-5">
         <div>
-          <label style={labelStyle}>Full Name</label>
-          <div style={{ position: 'relative' }}>
+          <label className="block text-sm font-bold text-[#2b101c] mb-2">Full Name</label>
+          <div className="relative">
             <Icon svg={<svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>} />
-            <input style={inputStyle} type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" />
+            <input className="w-full pl-12 pr-4 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors" type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" />
           </div>
         </div>
         <div>
-          <label style={labelStyle}>Phone Number</label>
-          <div style={{ position: 'relative' }}>
+          <label className="block text-sm font-bold text-[#2b101c] mb-2">Phone Number</label>
+          <div className="relative">
             <Icon svg={<svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>} />
-            <input style={inputStyle} type="tel" required value={phone} onChange={e => setPhone(e.target.value)} placeholder="10-digit phone number" />
+            <input className="w-full pl-12 pr-4 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors" type="tel" required value={phone} onChange={e => setPhone(e.target.value)} placeholder="10-digit phone number" />
           </div>
         </div>
         <div>
-          <label style={labelStyle}>Email Address</label>
-          <div style={{ position: 'relative' }}>
+          <label className="block text-sm font-bold text-[#2b101c] mb-2">Email Address</label>
+          <div className="relative">
             <Icon svg={<svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>} />
-            <input style={inputStyle} type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="For password recovery" />
+            <input className="w-full pl-12 pr-4 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="For password recovery" />
           </div>
         </div>
         <div>
-          <label style={labelStyle}>Password</label>
-          <div style={{ position: 'relative' }}>
+          <label className="block text-sm font-bold text-[#2b101c] mb-2">Password</label>
+          <div className="relative">
             <Icon svg={<svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>} />
-            <input style={inputStyle} type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 6 characters" />
+            <input className="w-full pl-12 pr-4 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors" type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 6 characters" />
           </div>
         </div>
       </div>
-      <BtnPrimary type="submit" disabled={isLoading}>
+      <button 
+        type="submit" 
+        disabled={isLoading}
+        className="w-full py-4.5 bg-gradient-to-r from-[#fc8aa5] to-[#fab282] text-white font-extrabold text-lg rounded-2xl border-none cursor-pointer mt-8 shadow-xl shadow-pink-200/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         {isLoading ? 'Sending OTP...' : 'Send OTP →'}
-      </BtnPrimary>
+      </button>
       
-      <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <p style={{ color: '#846b74', fontSize: '15px', fontWeight: 500, margin: 0 }}>
+      <div className="mt-6 text-center">
+        <p className="text-[#846b74] text-base font-medium">
           Already have an account?{' '}
-          <button type="button" onClick={() => router.push(role === 'driver' ? '/driver/login' : '/login')} style={{ background: 'none', border: 'none', color: '#e11d48', fontWeight: 700, cursor: 'pointer', padding: 0, fontFamily: 'Outfit, sans-serif', textDecoration: 'none' }}>Log in</button>
+          <button type="button" onClick={() => router.push(role === 'driver' ? '/driver/login' : '/login')} className="bg-none border-none text-[#e11d48] font-bold cursor-pointer p-0 hover:underline">Log in</button>
         </p>
       </div>
     </form>
@@ -240,19 +246,35 @@ function SignupWizard() {
 
   // STEP 2: Verify OTP
   if (step === 2) return card(
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#2b101c', marginBottom: '6px', textAlign: 'center' }}>Verify OTP</h2>
-      <p style={{ color: '#846b74', fontSize: '16px', fontWeight: 500, marginBottom: '28px', textAlign: 'center' }}>Code sent to <strong style={{ color: '#2b101c' }}>{email}</strong></p>
+    <div className="flex flex-col items-center">
+      <h2 className="text-3xl sm:text-4xl font-black text-[#2b101c] mb-2 text-center tracking-tight leading-tight">Verify OTP</h2>
+      <p className="text-[#846b74] text-base font-medium mb-8 text-center leading-relaxed">Code sent to <strong className="text-[#2b101c]">{email}</strong></p>
       <ErrBox />
-      <OtpBoxes otp={otp} onChange={handleOtpChange} refs={otpRefs.current} />
-      <BtnPrimary onClick={handleVerifyOTP} disabled={isLoading}>
+      <div className="flex justify-center gap-3 sm:gap-4 mb-8">
+        {otp.map((digit, idx) => (
+          <input 
+            key={idx} 
+            ref={otpRefs.current[idx]} 
+            type="text" 
+            maxLength={1} 
+            value={digit}
+            onChange={e => handleOtpChange(idx, e.target.value)}
+            className="w-14 h-14 sm:w-16 sm:h-16 border-2 border-[#f0dee6] rounded-2xl text-center text-2xl sm:text-3xl font-black text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors" 
+          />
+        ))}
+      </div>
+      <button 
+        onClick={handleVerifyOTP} 
+        disabled={isLoading}
+        className="w-full py-4.5 bg-gradient-to-r from-[#fc8aa5] to-[#fab282] text-white font-extrabold text-lg rounded-2xl border-none cursor-pointer shadow-xl shadow-pink-200/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+      >
         {isLoading ? 'Verifying...' : 'Verify OTP'}
-      </BtnPrimary>
+      </button>
       <button 
         type="button" 
         onClick={() => handleSendOTP()} 
         disabled={isLoading}
-        style={{ marginTop: '20px', background: 'none', border: 'none', color: '#846b74', fontWeight: 700, fontSize: '15px', cursor: 'pointer', fontFamily: 'Outfit, sans-serif', textDecoration: 'underline' }}
+        className="mt-5 bg-none border-none text-[#846b74] font-bold text-sm cursor-pointer hover:text-[#2b101c] underline"
       >
         Resend Code
       </button>
@@ -272,17 +294,17 @@ function SignupWizard() {
 
   if (step === 3) return card(
     <form onSubmit={finalSubmit}>
-      <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#2b101c', marginBottom: '6px' }}>Identity Verification</h2>
-      <p style={{ color: '#846b74', fontSize: '16px', fontWeight: 500, marginBottom: '24px' }}>
+      <h2 className="text-3xl font-black text-[#2b101c] mb-2 tracking-tight">Identity Verification</h2>
+      <p className="text-[#846b74] text-base font-medium mb-8 leading-relaxed">
         Please enter your document details for secure verification.
       </p>
       <ErrBox />
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div className="flex flex-col gap-5">
         <div>
-          <label style={labelStyle}>Aadhaar Card Number (12 digits)</label>
+          <label className="block text-sm font-bold text-[#2b101c] mb-2">Aadhaar Card Number (12 digits)</label>
           <input 
-            style={{ ...inputStyle, paddingLeft: '14px' }} 
+            className="w-full px-5 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors"
             type="text" 
             maxLength={12}
             required 
@@ -295,9 +317,9 @@ function SignupWizard() {
         {role === 'driver' && (
           <>
             <div>
-              <label style={labelStyle}>PAN Card Number</label>
+              <label className="block text-sm font-bold text-[#2b101c] mb-2">PAN Card Number</label>
               <input 
-                style={{ ...inputStyle, paddingLeft: '14px' }} 
+                className="w-full px-5 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors"
                 type="text" 
                 required 
                 value={panNumber} 
@@ -306,9 +328,9 @@ function SignupWizard() {
               />
             </div>
             <div>
-              <label style={labelStyle}>Driving License Number</label>
+              <label className="block text-sm font-bold text-[#2b101c] mb-2">Driving License Number</label>
               <input 
-                style={{ ...inputStyle, paddingLeft: '14px' }} 
+                className="w-full px-5 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors"
                 type="text" 
                 required 
                 value={licenseNumber} 
@@ -317,9 +339,9 @@ function SignupWizard() {
               />
             </div>
             <div>
-              <label style={labelStyle}>Vehicle Number Plate</label>
+              <label className="block text-sm font-bold text-[#2b101c] mb-2">Vehicle Number Plate</label>
               <input 
-                style={{ ...inputStyle, paddingLeft: '14px' }} 
+                className="w-full px-5 py-4 border-2 border-[#f0dee6] rounded-2xl text-base font-semibold text-[#2b101c] focus:border-[#e11d48] outline-none transition-colors"
                 type="text" 
                 required 
                 value={vehicleNumber} 
@@ -331,15 +353,19 @@ function SignupWizard() {
         )}
       </div>
 
-      <div style={{ marginTop: '24px', background: '#fef2f2', borderRadius: '14px', padding: '16px', border: '1px solid #fee2e2' }}>
-        <p style={{ margin: 0, fontSize: '14px', color: '#991b1b', fontWeight: 600 }}>
+      <div className="mt-6 bg-[#fef2f2] rounded-2xl p-4 border border-[#fee2e2]">
+        <p className="m-0 text-sm text-[#991b1b] font-semibold leading-relaxed">
           🔒 Your data is compared against our secure verification vault and encrypted.
         </p>
       </div>
 
-      <BtnPrimary type="submit" disabled={!canFinish || isLoading}>
+      <button 
+        type="submit" 
+        disabled={!canFinish || isLoading}
+        className="w-full py-4.5 bg-gradient-to-r from-[#fc8aa5] to-[#fab282] text-white font-extrabold text-lg rounded-2xl border-none cursor-pointer mt-8 shadow-xl shadow-pink-200/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         {isLoading ? 'Verifying...' : 'Finish Registration 🎉'}
-      </BtnPrimary>
+      </button>
     </form>
   );
 
@@ -348,8 +374,8 @@ function SignupWizard() {
 
 export default function Signup() {
   return (
-    <div style={{ minHeight: '100vh', background: '#fcf9f9', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', fontFamily: 'Outfit, sans-serif' }}>
-      <Suspense fallback={<p style={{ padding: '40px', color: '#e11d48', fontWeight: 700 }}>Loading...</p>}>
+    <div className="min-h-screen bg-[#fcf9f9] flex items-start justify-center">
+      <Suspense fallback={<div className="p-10 text-[#e11d48] font-bold">Loading...</div>}>
         <SignupWizard />
       </Suspense>
     </div>

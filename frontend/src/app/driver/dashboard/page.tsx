@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import RoleGuard from '@/components/RoleGuard';
 import SystemAlert from '@/components/SystemAlert';
 import ChatOverlay from '@/components/ChatOverlay';
+import Link from 'next/link';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -337,93 +338,118 @@ function DriverDashboardContent() {
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh', background: '#f1f5f9', overflow: 'hidden' }}>
+    <div className="relative w-full h-screen bg-slate-50 overflow-hidden font-['Outfit',sans-serif]">
       
       {/* 🗺️ FULL SCREEN MAP */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+      <div className="absolute inset-0 z-0">
          <Map />
       </div>
 
       {/* 🏛️ HEADER BAR */}
-      <nav style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', zIndex: 100, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', borderRadius: '20px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.3)' }}>
+      <nav className="absolute top-4 sm:top-6 left-4 right-4 sm:left-6 sm:right-6 z-[100] bg-white/90 backdrop-blur-xl h-16 sm:h-20 flex items-center justify-between px-6 rounded-3xl shadow-2xl border border-white/20">
         
         {/* Left: Brand */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '24px' }}>🛵</span>
-          <span style={{ fontWeight: 900, fontSize: '18px', color: '#111827' }}>SheRide</span>
+        <div className="flex items-center gap-2">
+          <span className="text-2xl sm:text-3xl">🛵</span>
+          <span className="font-black text-lg sm:text-xl text-[#0f172a] tracking-tight">SheRide</span>
         </div>
         
         {/* Middle: Online Toggle */}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: isOnline ? '#dcfce7' : '#fee2e2', padding: '8px 20px', borderRadius: '100px', cursor: 'pointer', transition: '0.3s', border: isOnline ? '1.5px solid #86efac' : '1.5px solid #fecaca' }} onClick={() => setIsOnline(!isOnline)}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? '#22c55e' : '#ef4444' }}></div>
-            <span style={{ fontSize: '11px', fontWeight: 900, color: isOnline ? '#166534' : '#991b1b', letterSpacing: '0.5px' }}>{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
-          </div>
+        <div className="hidden md:flex flex-1 justify-center">
+          <button 
+            onClick={() => setIsOnline(!isOnline)}
+            className={`flex items-center gap-3 px-6 py-2.5 rounded-full border-2 transition-all active:scale-95 ${
+              isOnline 
+              ? 'bg-green-50 border-green-100 text-green-700 shadow-sm shadow-green-100' 
+              : 'bg-red-50 border-red-100 text-red-700 shadow-sm shadow-red-100'
+            }`}
+          >
+            <div className={`w-2.5 h-2.5 rounded-full animate-pulse ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <span className="text-[11px] font-black uppercase tracking-widest">{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+          </button>
         </div>
 
-        {/* Right: Actions */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '20px' }}>
-          <button onClick={() => { setIsProfileOpen(false); setIsHistoryOpen(false); }} style={{ background: 'none', border: 'none', color: '#111827', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>Map</button>
-          <button onClick={fetchHistory} style={{ background: 'none', border: 'none', color: '#111827', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>My Rides</button>
-          <button onClick={() => { setIsProfileOpen(true); setIsHistoryOpen(false); }} style={{ background: 'none', border: 'none', color: '#111827', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>Profile</button>
-          <button onClick={logout} style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>Logout</button>
+        {/* Mobile Toggle Button (Visible only on mobile) */}
+        <div className="flex md:hidden items-center gap-3">
+          <button 
+             onClick={() => setIsOnline(!isOnline)}
+             className={`w-10 h-10 rounded-2xl flex items-center justify-center border-2 transition-all ${
+               isOnline ? 'bg-green-50 border-green-100 text-green-600' : 'bg-red-50 border-red-100 text-red-600'
+             }`}
+          >
+             {isOnline ? '🟢' : '🔴'}
+          </button>
+        </div>
+        
+        {/* Right: Actions (Desktop) */}
+        <div className="hidden md:flex items-center gap-6">
+          <Link href="/driver/dashboard" className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">Map</Link>
+          <Link href="/driver/history" className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">My Rides</Link>
+          <button onClick={() => setIsProfileOpen(true)} className="text-sm font-black text-[#0f172a] hover:text-[#e11d48] transition-colors">Profile</button>
+          <button onClick={logout} className="text-sm font-black text-[#ef4444] hover:opacity-80 transition-opacity">Logout</button>
         </div>
       </nav>
 
       {/* 📥 INCOMING RIDE REQUEST OVERLAY */}
       {incomingRide && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-           <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '400px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', animation: 'slideUp 0.4s ease-out' }}>
-             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <span style={{ background: '#111827', color: '#fff', padding: '6px 14px', borderRadius: '12px', fontSize: '12px', fontWeight: 800 }}>NEW REQUEST</span>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '4px solid #111827', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px' }}>{countdown}</div>
+        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md z-[500] flex items-center justify-center p-5">
+           <div className="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl animate-in zoom-in slide-in-from-bottom duration-300">
+             <div className="flex justify-between items-center mb-8">
+                <span className="bg-[#0f172a] text-white px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">NEW REQUEST</span>
+                <div className="w-14 h-14 rounded-full border-4 border-[#0f172a] flex items-center justify-center font-black text-xl text-[#0f172a]">{countdown}</div>
              </div>
              
-             <h2 style={{ fontSize: '24px', fontWeight: 900, margin: '0 0 8px' }}>{incomingRide.customerName}</h2>
-             <p style={{ color: '#64748b', margin: '0 0 24px', fontWeight: 500 }}>is looking for a ride</p>
+             <div className="mb-8">
+               <h2 className="text-3xl font-black text-[#0f172a] mb-1">{incomingRide.customerName}</h2>
+               <p className="text-slate-500 font-bold">is looking for a ride</p>
+             </div>
 
-             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
-                <div>
-                   <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 800, color: '#94a3b8' }}>PICKUP</p>
-                   <p style={{ margin: 0, fontWeight: 700, fontSize: '15px' }}>📍 {incomingRide.pickup.address}</p>
+             <div className="space-y-6 mb-10">
+                <div className="relative pl-8">
+                   <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-green-100 border-4 border-white shadow-sm flex items-center justify-center text-[8px]">📍</div>
+                   <div className="absolute left-[9px] top-7 bottom-[-20px] w-0.5 bg-slate-100 dashed-border"></div>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">PICKUP</p>
+                   <p className="font-black text-[#0f172a] text-sm leading-tight">{incomingRide.pickup.address}</p>
                 </div>
-                <div>
-                   <p style={{ margin: '0 0 4px', fontSize: '11px', fontWeight: 800, color: '#94a3b8' }}>DROP</p>
-                   <p style={{ margin: 0, fontWeight: 700, fontSize: '15px' }}>🏁 {incomingRide.drop.address}</p>
+                <div className="relative pl-8">
+                   <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-red-100 border-4 border-white shadow-sm flex items-center justify-center text-[8px]">🏁</div>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">DROP</p>
+                   <p className="font-black text-[#0f172a] text-sm leading-tight">{incomingRide.drop.address}</p>
                 </div>
              </div>
 
-             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px', background: '#f8fafc', borderRadius: '20px', marginBottom: incomingRide.scheduledTime ? '16px' : '32px' }}>
-                <div>
-                   <p style={{ margin: 0, fontSize: '24px', fontWeight: 900 }}>{incomingRide.fare}</p>
-                   <p style={{ margin: 0, fontSize: '11px', fontWeight: 800, color: '#64748b' }}>EARNING</p>
+             <div className="grid grid-cols-3 gap-2 px-4 py-6 bg-slate-50 rounded-3xl mb-8 border border-slate-100">
+                <div className="text-center">
+                   <p className="text-xl font-black text-[#0f172a]">{incomingRide.fare}</p>
+                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">EARNING</p>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                   <p style={{ margin: 0, fontSize: '24px', fontWeight: 900 }}>{incomingRide.distance ? `${incomingRide.distance} Km` : '--'}</p>
-                   <p style={{ margin: 0, fontSize: '11px', fontWeight: 800, color: '#64748b' }}>DISTANCE</p>
+                <div className="text-center border-x border-slate-200">
+                   <p className="text-xl font-black text-[#0f172a]">{incomingRide.distance ? `${incomingRide.distance}Km` : '--'}</p>
+                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">DISTANCE</p>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 900 }}>{incomingRide.rideType || 'SheRide'}</p>
-                   <p style={{ margin: 0, fontSize: '11px', fontWeight: 800, color: '#64748b' }}>TYPE</p>
+                <div className="text-center flex flex-col justify-center items-center">
+                   <p className="text-[10px] font-black text-[#e11d48] uppercase leading-tight line-clamp-2">
+                     {incomingRide.rideType?.replace('SheRide ', '') || 'Standard'}
+                   </p>
+                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">TYPE</p>
                 </div>
              </div>
 
-             {/* Scheduled Ride Badge */}
              {incomingRide.scheduledTime && (
-               <div style={{ background: '#fef3c7', border: '1.5px solid #fde68a', borderRadius: '14px', padding: '12px 16px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                 <span style={{ fontSize: '18px' }}>📅</span>
+               <div className="bg-amber-50 border-2 border-amber-100 rounded-2xl p-4 mb-8 flex items-center gap-4">
+                 <span className="text-2xl">📅</span>
                  <div>
-                   <p style={{ margin: 0, fontSize: '11px', fontWeight: 800, color: '#92400e', letterSpacing: '0.5px' }}>SCHEDULED RIDE</p>
-                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#78350f' }}>
+                   <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-0.5">SCHEDULED RIDE</p>
+                   <p className="text-sm font-black text-amber-900">
                      {new Date(incomingRide.scheduledTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                    </p>
                  </div>
                </div>
              )}
 
-             <div style={{ display: 'flex', gap: '12px' }}>
-                <button onClick={() => setIncomingRide(null)} style={{ flex: 1, padding: '18px', borderRadius: '18px', border: '2px solid #e2e8f0', background: 'none', fontWeight: 800, cursor: 'pointer' }}>Ignore</button>
-                <button onClick={acceptRide} style={{ flex: 2, padding: '18px', borderRadius: '18px', border: 'none', background: '#111827', color: '#fff', fontWeight: 900, cursor: 'pointer', fontSize: '16px' }}>Accept Ride</button>
+             <div className="flex gap-4">
+                <button onClick={() => setIncomingRide(null)} className="flex-1 py-4.5 rounded-2xl border-2 border-slate-100 font-black text-slate-500 hover:bg-slate-50 transition-all active:scale-95">Ignore</button>
+                <button onClick={acceptRide} className="flex-[2] py-4.5 rounded-2xl bg-[#0f172a] text-white font-black text-lg shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95">Accept Ride</button>
              </div>
            </div>
         </div>
@@ -431,14 +457,18 @@ function DriverDashboardContent() {
 
       {/* 🚀 ACTIVE RIDE FLOATING CARD */}
       {activeRide && (
-        <div style={{ position: 'absolute', bottom: '32px', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 48px)', maxWidth: '440px', zIndex: 400 }}>
-          <div style={{ background: '#fff', borderRadius: '32px', padding: '28px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.05)' }}>
-             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <div className="absolute bottom-6 sm:bottom-10 left-6 right-6 lg:left-1/2 lg:-translate-x-1/2 lg:w-[440px] z-[400]">
+          <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 animate-in slide-in-from-bottom duration-500">
+             <div className="flex justify-between items-start mb-6">
                 <div>
-                   <p style={{ margin: 0, fontSize: '11px', fontWeight: 800, color: '#94a3b8' }}>CURRENT RIDE</p>
-                   <h3 style={{ margin: 0, fontSize: '22px', fontWeight: 900 }}>{activeRide.customerName}</h3>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">CURRENT TRIP</p>
+                   <h3 className="text-2xl font-black text-[#0f172a]">{activeRide.customerName}</h3>
                 </div>
-                <div style={{ background: '#f1f5f9', padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: 800 }}>
+                <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black tracking-widest border-2 ${
+                  rideState === 'accepted' ? 'bg-blue-50 border-blue-100 text-blue-600' :
+                  rideState === 'arrived' ? 'bg-green-50 border-green-100 text-green-600' :
+                  'bg-orange-50 border-orange-100 text-orange-600'
+                }`}>
                    {rideState === 'accepted' ? '🚀 OTW' : rideState === 'arrived' ? '👋 ARRIVED' : '🛣️ IN TRANSIT'}
                 </div>
              </div>
@@ -449,33 +479,15 @@ function DriverDashboardContent() {
                     if (activeRide?.rideId) {
                       setChatRideId(activeRide.rideId);
                       setIsChatOpen(true);
-                      setUnreadCount(0); // Explicitly reset on click
+                      setUnreadCount(0);
                     }
                   }}
-                  style={{ width: '100%', marginBottom: '16px', padding: '14px', background: '#f8fafc', color: '#111827', fontWeight: 800, borderRadius: '16px', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  className="w-full mb-6 py-4 bg-slate-50 text-[#0f172a] font-black rounded-2xl border-2 border-slate-100 hover:bg-slate-100 transition-all flex items-center justify-center gap-3 active:scale-95"
                 >
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '20px' }}>💬</span>
+                  <div className="relative flex items-center justify-center">
+                    <span className="text-2xl">💬</span>
                     {unreadCount > 0 && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '-10px',
-                        right: '-10px',
-                        background: '#ef4444',
-                        color: '#fff',
-                        minWidth: '20px',
-                        height: '20px',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '10px',
-                        fontWeight: 900,
-                        border: '2px solid #fff',
-                        boxShadow: '0 4px 8px rgba(239, 68, 68, 0.3)',
-                        padding: '0 4px',
-                        zIndex: 10
-                      }}>
+                      <div className="absolute -top-2 -right-2 bg-[#e11d48] text-white min-w-[20px] h-5 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-white shadow-lg px-1">
                         {unreadCount}
                       </div>
                     )}
@@ -485,33 +497,57 @@ function DriverDashboardContent() {
               )}
 
              {rideState === 'accepted' && (
-                <button onClick={async () => {
-                  const token = localStorage.getItem('driverToken');
-                  const res = await fetch(`${API_URL}/api/rides/${activeRide.rideId}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ status: 'arrived' })
-                  });
-                  if (res.ok) {
-                    socket?.emit('driver-arrived', { customerId: activeRide.customerId });
-                    setRideState('arrived');
-                  }
-                }} style={{ width: '100%', padding: '18px', borderRadius: '18px', background: '#111827', color: '#fff', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '16px' }}>I Have Arrived</button>
+                <button 
+                  onClick={async () => {
+                    const token = localStorage.getItem('driverToken');
+                    const res = await fetch(`${API_URL}/api/rides/${activeRide.rideId}/status`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                      body: JSON.stringify({ status: 'arrived' })
+                    });
+                    if (res.ok) {
+                      socket?.emit('driver-arrived', { customerId: activeRide.customerId });
+                      setRideState('arrived');
+                    }
+                  }} 
+                  className="w-full py-5 bg-[#0f172a] text-white font-black text-lg rounded-2xl shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                >
+                  I Have Arrived
+                </button>
              )}
 
              {rideState === 'arrived' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                   <input value={otpInput} onChange={e => setOtpInput(e.target.value)} placeholder="ENTER TRIP PIN" style={{ width: '100%', padding: '18px', fontSize: '18px', fontWeight: 900, textAlign: 'center', borderRadius: '18px', border: '2px solid #f1f5f9', background: '#f8fafc', outline: 'none' }} />
-                   <button onClick={startTripWithOtp} style={{ width: '100%', padding: '18px', borderRadius: '18px', background: '#111827', color: '#fff', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '16px' }}>Start Journey</button>
+                <div className="flex flex-col gap-4">
+                   <div className="relative">
+                      <input 
+                        value={otpInput} 
+                        onChange={e => setOtpInput(e.target.value)} 
+                        placeholder="TRIP PIN" 
+                        className="w-full py-5 px-6 text-center text-3xl font-black text-[#0f172a] rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-[#e11d48] focus:bg-white outline-none transition-all placeholder:text-slate-300 placeholder:text-lg tracking-widest" 
+                      />
+                   </div>
+                   <button 
+                     onClick={startTripWithOtp} 
+                     className="w-full py-5 bg-[#0f172a] text-white font-black text-lg rounded-2xl shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                    >
+                      Start Journey
+                    </button>
                 </div>
              )}
 
              {rideState === 'started' && (
-                <button onClick={finishRide} style={{ width: '100%', padding: '18px', borderRadius: '18px', background: '#059669', color: '#fff', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '16px' }}>Complete Trip</button>
+                <button 
+                  onClick={finishRide} 
+                  className="w-full py-5 bg-[#059669] text-white font-black text-lg rounded-2xl shadow-xl shadow-emerald-100 hover:bg-[#047857] transition-all active:scale-95"
+                >
+                  Complete Trip
+                </button>
              )}
 
              {rideState !== 'started' && (
-               <button onClick={() => setDriverCancelModal(true)} style={{ width: '100%', background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, marginTop: '16px', cursor: 'pointer' }}>Cancel Ride</button>
+               <button onClick={() => setDriverCancelModal(true)} className="w-full mt-6 text-sm font-black text-slate-400 hover:text-[#ef4444] transition-colors">
+                 Cancel Ride
+               </button>
              )}
           </div>
         </div>
@@ -519,48 +555,51 @@ function DriverDashboardContent() {
 
       {/* 👤 PROFILE OVERLAY */}
       {isProfileOpen && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '500px', padding: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', position: 'relative' }}>
-             <button onClick={() => setIsProfileOpen(false)} style={{ position: 'absolute', top: '24px', right: '24px', background: '#f1f5f9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontWeight: 900 }}>×</button>
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md z-[1000] flex items-center justify-center p-5">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-md p-8 sm:p-10 shadow-2xl relative animate-in zoom-in duration-300">
+             <button onClick={() => setIsProfileOpen(false)} className="absolute top-6 right-6 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black text-slate-400 hover:bg-slate-200 transition-colors">×</button>
              
-             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#f1f5f9', margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px' }}>👩</div>
-                <h2 style={{ fontSize: '28px', fontWeight: 900, margin: '0 0 4px' }}>{userName}</h2>
-                <p style={{ color: '#64748b', fontWeight: 600 }}>Verified Driver</p>
+             <div className="text-center mb-10">
+                <div className="w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4 flex items-center justify-center text-5xl shadow-inner">👩</div>
+                <h2 className="text-3xl font-black text-[#0f172a] mb-1">{userName}</h2>
+                <p className="text-slate-500 font-bold flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                  Verified SheRide Partner
+                </p>
              </div>
 
-             <div style={{ display: 'grid', gap: '16px', marginBottom: '32px' }}>
-                <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                   <label style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', display: 'block', marginBottom: '4px' }}>PHONE NUMBER</label>
-                   {isEditing ? <input value={editPhone} onChange={e => setEditPhone(e.target.value)} style={{ width: '100%', border: 'none', background: 'none', fontSize: '16px', fontWeight: 700, outline: 'none' }} /> : <p style={{ margin: 0, fontWeight: 700 }}>{driverProfile?.phone}</p>}
+             <div className="space-y-4 mb-10">
+                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">PHONE NUMBER</label>
+                   {isEditing ? <input value={editPhone} onChange={e => setEditPhone(e.target.value)} className="w-full bg-transparent font-black text-[#0f172a] outline-none" /> : <p className="font-black text-[#0f172a]">{driverProfile?.phone}</p>}
                 </div>
-                <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                   <label style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', display: 'block', marginBottom: '4px' }}>VEHICLE PLATE</label>
-                   {isEditing ? <input value={editVehicle} onChange={e => setEditVehicle(e.target.value)} style={{ width: '100%', border: 'none', background: 'none', fontSize: '16px', fontWeight: 700, outline: 'none' }} /> : <p style={{ margin: 0, fontWeight: 700 }}>{driverProfile?.vehicleNumber}</p>}
+                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">VEHICLE PLATE</label>
+                   {isEditing ? <input value={editVehicle} onChange={e => setEditVehicle(e.target.value)} className="w-full bg-transparent font-black text-[#0f172a] outline-none" /> : <p className="font-black text-[#0f172a]">{driverProfile?.vehicleNumber}</p>}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                    <div style={{ padding: '16px', background: '#ecfdf5', borderRadius: '16px', border: '1px solid #d1fae5', textAlign: 'center' }}>
-                       <label style={{ fontSize: '10px', fontWeight: 800, color: '#059669', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>Rating</label>
-                       <p style={{ margin: 0, fontWeight: 900, color: '#047857', fontSize: '18px' }}>⭐ {driverProfile?.trustScore?.toFixed(1) || '5.0'}</p>
+                <div className="grid grid-cols-3 gap-3">
+                    <div className="p-4 bg-green-50 rounded-2xl border border-green-100 text-center">
+                       <label className="text-[8px] font-black text-green-600 uppercase tracking-widest block mb-1">Rating</label>
+                       <p className="font-black text-green-700 text-lg">⭐ {driverProfile?.trustScore?.toFixed(1) || '5.0'}</p>
                     </div>
-                    <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                       <label style={{ fontSize: '10px', fontWeight: 800, color: '#94a3b8', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>Trips</label>
-                       <p style={{ margin: 0, fontWeight: 900, fontSize: '18px' }}>🛵 {history.length || driverProfile?.totalRides || '0'}</p>
+                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                       <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Trips</label>
+                       <p className="font-black text-[#0f172a] text-lg">🛵 {history.length || driverProfile?.totalRides || '0'}</p>
                     </div>
-                    <div style={{ padding: '16px', background: '#fefce8', borderRadius: '16px', border: '1px solid #fef08a', textAlign: 'center' }} onClick={fetchHistory}>
-                       <label style={{ fontSize: '10px', fontWeight: 800, color: '#a16207', display: 'block', marginBottom: '4px', textTransform: 'uppercase', cursor: 'pointer' }}>Wallet (Today)</label>
-                       <p style={{ margin: 0, fontWeight: 900, fontSize: '18px', color: '#854d0e', cursor: 'pointer' }}>₹{todayEarnings || '0'}</p>
+                    <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-center cursor-pointer active:scale-95 transition-transform" onClick={fetchHistory}>
+                       <label className="text-[8px] font-black text-amber-700 uppercase tracking-widest block mb-1">Today</label>
+                       <p className="font-black text-amber-800 text-lg">₹{todayEarnings || '0'}</p>
                     </div>
                  </div>
              </div>
 
-             <div style={{ display: 'flex', gap: '12px' }}>
+             <div className="flex gap-4">
                 {!isEditing ? (
-                   <button onClick={() => setIsEditing(true)} style={{ width: '100%', padding: '18px', borderRadius: '18px', background: '#111827', color: '#fff', fontWeight: 900, border: 'none', cursor: 'pointer' }}>Edit Profile</button>
+                   <button onClick={() => setIsEditing(true)} className="w-full py-4.5 bg-[#0f172a] text-white font-black text-lg rounded-2xl shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95">Edit Profile</button>
                 ) : (
                    <>
-                      <button onClick={() => setIsEditing(false)} style={{ flex: 1, padding: '18px', borderRadius: '18px', background: '#f1f5f9', color: '#64748b', fontWeight: 900, border: 'none', cursor: 'pointer' }}>Cancel</button>
-                      <button onClick={saveProfile} style={{ flex: 2, padding: '18px', borderRadius: '18px', background: '#111827', color: '#fff', fontWeight: 900, border: 'none', cursor: 'pointer' }}>Save Changes</button>
+                      <button onClick={() => setIsEditing(false)} className="flex-1 py-4.5 rounded-2xl border-2 border-slate-100 font-black text-slate-400">Cancel</button>
+                      <button onClick={saveProfile} className="flex-[2] py-4.5 bg-[#0f172a] text-white font-black text-lg rounded-2xl shadow-xl">Save Changes</button>
                    </>
                 )}
              </div>
@@ -570,43 +609,47 @@ function DriverDashboardContent() {
 
       {/* 📜 MY RIDES OVERLAY */}
       {isHistoryOpen && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '600px', height: '80vh', padding: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-             <button onClick={() => setIsHistoryOpen(false)} style={{ position: 'absolute', top: '24px', right: '24px', background: '#f1f5f9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontWeight: 900 }}>×</button>
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md z-[1000] flex items-center justify-center p-5">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-2xl h-[85vh] p-8 sm:p-10 shadow-2xl relative flex flex-col animate-in slide-in-from-bottom duration-500">
+             <button onClick={() => setIsHistoryOpen(false)} className="absolute top-6 right-6 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-black text-slate-400 hover:bg-slate-200 transition-colors">×</button>
              
-             <h2 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '8px' }}>My Completed Rides</h2>
-             <div style={{ marginBottom: '24px', display: 'flex', gap: '12px' }}>
-                <div style={{ background: '#f8fafc', padding: '12px 20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                   <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>Total Earnings: </span>
-                   <span style={{ fontSize: '16px', fontWeight: 900, color: '#111827' }}>₹{(driverProfile as any)?.totalEarnings || 0}</span>
+             <h2 className="text-3xl font-black text-[#0f172a] mb-2">My Completed Rides</h2>
+             <div className="flex gap-4 mb-8">
+                <div className="bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
+                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Total Earnings</span>
+                   <span className="text-xl font-black text-[#0f172a]">₹{(driverProfile as any)?.totalEarnings || 0}</span>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '12px 20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                   <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>Total Trips: </span>
-                   <span style={{ fontSize: '16px', fontWeight: 900, color: '#111827' }}>{history.length}</span>
+                <div className="bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
+                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Total Trips</span>
+                   <span className="text-xl font-black text-[#0f172a]">{history.length}</span>
                 </div>
              </div>
 
-             <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
+             <div className="flex-1 overflow-y-auto pr-2 no-scrollbar space-y-4">
                 {loadingHistory ? (
-                   <div style={{ textAlign: 'center', padding: '40px' }}>⏳ Loading history...</div>
+                   <div className="text-center py-20 font-black text-slate-300 animate-pulse">⏳ Loading history...</div>
                 ) : history.length === 0 ? (
-                   <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>No rides found.</div>
+                   <div className="text-center py-20 text-slate-400 font-bold">No rides found.</div>
                 ) : (
-                   <div style={{ display: 'grid', gap: '16px' }}>
-                      {history.filter(h => h.status === 'completed').map((ride, i) => (
-                         <div key={i} style={{ padding: '20px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                               <p style={{ margin: '0 0 8px', fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>{new Date(ride.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</p>
-                               <p style={{ margin: '0 0 4px', fontWeight: 700, fontSize: '14px' }}>📍 {ride.pickupLocation?.address}</p>
-                               <p style={{ margin: 0, fontWeight: 700, fontSize: '14px' }}>🏁 {ride.dropLocation?.address}</p>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                               <p style={{ margin: 0, fontSize: '20px', fontWeight: 900 }}>{ride.fare}</p>
-                               <span style={{ fontSize: '10px', fontWeight: 800, background: '#dcfce7', color: '#059669', padding: '2px 8px', borderRadius: '6px' }}>PAID</span>
+                   history.filter(h => h.status === 'completed').map((ride, i) => (
+                      <div key={i} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:bg-white hover:shadow-lg transition-all">
+                         <div className="space-y-3">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{new Date(ride.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                            <div className="space-y-1">
+                              <p className="font-black text-[#0f172a] text-sm leading-tight flex items-center gap-2">
+                                <span className="text-[10px]">📍</span> {ride.pickupLocation?.address}
+                              </p>
+                              <p className="font-black text-[#0f172a] text-sm leading-tight flex items-center gap-2">
+                                <span className="text-[10px]">🏁</span> {ride.dropLocation?.address}
+                              </p>
                             </div>
                          </div>
-                      ))}
-                   </div>
+                         <div className="text-right">
+                            <p className="text-2xl font-black text-[#0f172a] mb-1">{ride.fare}</p>
+                            <span className="text-[9px] font-black bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-widest">PAID</span>
+                         </div>
+                      </div>
+                   ))
                 )}
              </div>
           </div>
@@ -615,20 +658,28 @@ function DriverDashboardContent() {
 
       {/* ⚠️ CANCELLATION MODAL */}
       {driverCancelModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(8px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '400px', padding: '36px' }}>
-            <h3 style={{ fontSize: '24px', fontWeight: 900, margin: '0 0 12px' }}>Cancel Ride?</h3>
-            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '28px' }}>Please select a reason for cancelling. Frequent cancellations may affect your trust score.</p>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[1100] flex items-center justify-center p-5">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-sm p-8 sm:p-10 shadow-2xl animate-in zoom-in duration-300">
+            <h3 className="text-2xl font-black text-[#0f172a] mb-2">Cancel Ride?</h3>
+            <p className="text-sm font-medium text-slate-500 mb-8">Please select a reason. Frequent cancellations may affect your trust score.</p>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
+            <div className="flex flex-col gap-3 mb-10">
                {['Traffic issues', 'Vehicle problems', 'Emergency', 'Other'].map(r => (
-                 <button key={r} onClick={() => setDriverCancelReason(r)} style={{ padding: '14px 20px', borderRadius: '16px', border: driverCancelReason === r ? '2.5px solid #111827' : '1.5px solid #e2e8f0', background: driverCancelReason === r ? '#f8fafc' : '#fff', textAlign: 'left', fontWeight: 800, cursor: 'pointer' }}>{r}</button>
+                 <button 
+                  key={r} 
+                  onClick={() => setDriverCancelReason(r)} 
+                  className={`py-4 px-6 rounded-2xl border-2 font-black text-left transition-all ${
+                    driverCancelReason === r ? 'border-[#0f172a] bg-slate-50' : 'border-slate-100'
+                  }`}
+                 >
+                   {r}
+                 </button>
                ))}
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setDriverCancelModal(false)} style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1.5px solid #e2e8f0', background: 'none', fontWeight: 800, cursor: 'pointer' }}>Back</button>
-              <button onClick={() => cancelRideAsDriver(driverCancelReason || 'Other')} style={{ flex: 1, padding: '16px', borderRadius: '16px', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>Cancel</button>
+            <div className="flex gap-4">
+              <button onClick={() => setDriverCancelModal(false)} className="flex-1 py-4.5 rounded-2xl border-2 border-slate-100 font-black text-slate-400">Back</button>
+              <button onClick={() => cancelRideAsDriver(driverCancelReason || 'Other')} className="flex-1 py-4.5 rounded-2xl bg-[#ef4444] text-white font-black shadow-lg shadow-red-100">Cancel</button>
             </div>
           </div>
         </div>
@@ -655,6 +706,28 @@ function DriverDashboardContent() {
         onClose={() => setIsChatOpen(false)} 
         socket={socket} 
       />
+
+      {/* ── MOBILE BOTTOM NAVIGATION BAR ── */}
+      {!activeRide && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+          <button onClick={() => setRideState('accepted')} className="flex flex-col items-center gap-1.5 px-4">
+            <span className="text-xl text-[#0f172a]">🏠</span>
+            <span className="text-[10px] font-black text-[#0f172a] uppercase tracking-wider">Home</span>
+          </button>
+          <Link href="/driver/history" className="flex flex-col items-center gap-1.5 px-4 no-underline">
+            <span className="text-xl">📜</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">My Rides</span>
+          </Link>
+          <button onClick={() => setIsProfileOpen(true)} className="flex flex-col items-center gap-1.5 px-4">
+            <span className="text-xl">👤</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Profile</span>
+          </button>
+          <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4">
+            <span className="text-xl">🚪</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Logout</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

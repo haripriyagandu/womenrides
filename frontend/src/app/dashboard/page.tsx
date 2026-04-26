@@ -25,6 +25,8 @@ function DashboardContent() {
   const [showEmergency, setShowEmergency] = useState(false);
   const [isSafetyOpen, setIsSafetyOpen] = useState(false);
   const [sosLoading, setSosLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   // Format 12-hour preview for easy interface
   const [scheduleDate, setScheduleDate] = useState('');
@@ -371,6 +373,7 @@ function DashboardContent() {
 
     newSocket.on('ride-accepted', (data) => {
       fetchActiveRides();
+      setShowRides(false); // Hide selection UI on mobile
       // Only lock the main dashboard map to 'accepted' if it's an INSTANT ride.
       if (!data.scheduledTime) {
         setRideStatus('accepted');
@@ -393,11 +396,13 @@ function DashboardContent() {
 
     newSocket.on('driver-arrived', (data) => {
       fetchActiveRides();
+      setShowRides(false);
       setRideStatus('arrived');
       showAlert("👋 Your driver has arrived at the pickup location!", 'info');
     });
     newSocket.on('ride-started', (data) => {
       fetchActiveRides();
+      setShowRides(false);
       setRideStatus('started');
       showAlert("🚀 Trip started! Safe journey.", 'success');
     });
@@ -421,14 +426,21 @@ function DashboardContent() {
       setIsChatOpen(true);
       setUnreadCount(0);
     };
+    const handleTriggerSOS = (e: any) => {
+      const targetId = e.detail;
+      const defaultIds = customerProfile?.emergencyContacts?.map((c: any) => c._id) || [];
+      setContactSelection({ visible: true, type: 'sos', rideId: targetId, selectedIds: defaultIds });
+    };
 
     window.addEventListener('triggerCancelRide', handleTriggerCancel);
     window.addEventListener('triggerOpenChat', handleTriggerOpenChat);
+    window.addEventListener('triggerSOS', handleTriggerSOS);
 
     return () => { 
       newSocket.disconnect(); 
       window.removeEventListener('triggerCancelRide', handleTriggerCancel);
       window.removeEventListener('triggerOpenChat', handleTriggerOpenChat);
+      window.removeEventListener('triggerSOS', handleTriggerSOS);
     }
   }, []); // Mount only for socket initialization
 
@@ -597,19 +609,79 @@ function DashboardContent() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#f1f5f9', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* ── NAVBAR ── */}
-      <nav style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', padding: '0 24px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-        <span style={{ fontSize: '22px', fontWeight: 900, color: '#e11d48' }}>SheRide</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', fontSize: '14px', fontWeight: 600 }}>
-          <Link href="/dashboard" style={{ color: '#e11d48', textDecoration: 'none' }}>Home</Link>
-          <Link href="/history" style={{ color: '#6b7280', textDecoration: 'none' }}>My Rides</Link>
-          <button onClick={() => setIsSafetyOpen(true)} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Outfit', fontWeight: 600 }}>Safety</button>
-          <Link href="/profile" style={{ color: '#6b7280', textDecoration: 'none' }}>Profile</Link>
-          <button onClick={logout} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Outfit', fontWeight: 600 }}>Logout</button>
-          <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#ffe4e6', color: '#e11d48', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+      <nav className="bg-white border-b border-[#e5e7eb] px-4 sm:px-6 h-16 flex items-center justify-between sticky top-0 z-[60]">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsAccountMenuOpen(!isAccountMenuOpen);
+            }}
+            className="lg:hidden p-2 -ml-2 text-[#4b5563] hover:bg-gray-100 rounded-xl transition-colors relative z-[100]"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
+          <Link href="/dashboard" className="no-underline">
+            <span className="text-xl sm:text-2xl font-black text-[#e11d48] tracking-tight">SheRide</span>
+          </Link>
+        </div>
+        
+        <div className="flex items-center gap-4 sm:gap-8">
+          <button 
+            onClick={() => { setRideStatus('idle'); setShowRides(false); setIsSidebarOpen(false); }}
+            className="text-sm font-black text-[#e11d48] bg-transparent border-none cursor-pointer"
+          >
+            Home
+          </button>
+          <div className="hidden lg:flex items-center gap-8 text-sm font-bold">
+            <Link href="/history" className="text-[#6b7280] hover:text-[#e11d48] transition-colors">My Rides</Link>
+            <button onClick={() => setIsSafetyOpen(true)} className="text-[#6b7280] hover:text-[#e11d48] transition-colors font-bold cursor-pointer">Safety</button>
+            <Link href="/profile" className="text-[#6b7280] hover:text-[#e11d48] transition-colors">Profile</Link>
+            <button onClick={logout} className="text-[#ef4444] font-bold cursor-pointer">Logout</button>
+          </div>
+          <div className="w-9 h-9 rounded-full bg-[#ffe4e6] text-[#e11d48] flex items-center justify-center font-extrabold shadow-sm border border-[#fecdd3]">
             {userName.charAt(0).toUpperCase()}
           </div>
         </div>
       </nav>
+
+      {/* ── MOBILE ACCOUNT MENU ── */}
+      {isAccountMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-[1000]">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsAccountMenuOpen(false)} />
+          <div className="absolute top-0 left-0 bottom-0 w-72 bg-white shadow-2xl animate-in slide-in-from-left duration-300">
+            <div className="p-8 bg-gradient-to-br from-[#111827] to-[#1f2937] text-white">
+              <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-3xl mb-4">👩</div>
+              <h3 className="text-xl font-black">{userName}</h3>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Passenger Account</p>
+            </div>
+            <div className="p-4 space-y-2">
+              <button onClick={() => setIsAccountMenuOpen(false)} className="w-full flex items-center gap-4 p-4 rounded-2xl bg-rose-50 text-[#e11d48] transition-colors text-left">
+                <span className="text-xl">🗺️</span>
+                <span className="font-black">Back to Map</span>
+              </button>
+              <Link href="/profile" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
+                <span className="text-xl">👤</span>
+                <span className="font-black text-[#0f172a]">My Profile</span>
+              </Link>
+              <Link href="/history" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
+                <span className="text-xl">📜</span>
+                <span className="font-black text-[#0f172a]">Ride History</span>
+              </Link>
+              <button onClick={() => { setIsSafetyOpen(true); setIsAccountMenuOpen(false); }} className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors text-left">
+                <span className="text-xl">🛡️</span>
+                <span className="font-black text-[#0f172a]">Safety Dashboard</span>
+              </button>
+              <div className="h-px bg-slate-100 my-4" />
+              <button onClick={logout} className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-600 hover:bg-rose-50 transition-colors text-left">
+                <span className="text-xl">🚪</span>
+                <span className="font-black">Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── SAFETY DASHBOARD MODAL ── */}
       {isSafetyOpen && (
@@ -684,11 +756,39 @@ function DashboardContent() {
 
 
       {/* ── MAIN BODY ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Sidebar */}
-        <div style={{ width: '400px', background: '#fff', overflowY: 'auto', borderRight: '1px solid #e5e7eb' }}>
-          <div style={{ padding: '24px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '20px', color: '#111827' }}>Where to?</h2>
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden relative bg-white">
+        {/* Sidebar Overlay (Mobile) */}
+        {isSidebarOpen && (
+          <div 
+            className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar / Search Area */}
+        <div className={`
+          fixed lg:static inset-y-0 left-0 z-[200] w-full lg:w-[380px] bg-white border-r border-[#e5e7eb] overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${(rideStatus === 'idle' && !showRides) ? 'translate-x-0 relative' : ''}
+        `}>
+          <div className="p-6 pb-24 lg:pb-6">
+            {/* ── SEARCH AREA ── */}
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-3 lg:block">
+                  <button 
+                    onClick={() => { setShowRides(false); setRideStatus('idle'); setIsSidebarOpen(false); }}
+                    className="lg:hidden w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-[#111827] active:scale-95"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+                  <div>
+                    <h2 className="text-2xl font-black text-[#111827]">Where to?</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Book your SheRide</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
               <LocationAutocomplete
@@ -784,74 +884,84 @@ function DashboardContent() {
                       }
                     }
                     fetchEstimates(); 
+                    setIsSidebarOpen(false); // Close sidebar on search (mobile)
                   } 
                 }} 
-                style={{ 
-                  width: '100%', 
-                  padding: '18px', 
-                  background: (!pickupObj || !dropObj) ? '#cbd5e1' : '#111827', 
-                  color: '#fff', 
-                  fontWeight: 800, 
-                  borderRadius: '18px', 
-                  border: 'none', 
-                  cursor: (!pickupObj || !dropObj) ? 'not-allowed' : 'pointer', 
-                  fontSize: '16px', 
-                  boxShadow: '0 10px 20px rgba(17,24,39,0.1)' 
-                }}
+                className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all ${
+                  (!pickupObj || !dropObj) 
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                  : 'bg-[#111827] text-white hover:scale-[1.02] active:scale-[0.98]'
+                }`}
               >
                 {(!pickupObj || !dropObj) ? 'Select Locations...' : 'Search SheRides'}
               </button>
             ) : (
-              <div style={{ marginTop: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <p style={{ fontSize: '11px', fontWeight: 700, color: '#9ca3af' }}>AVAILABLE RIDES</p>
-                  <button onClick={() => setShowRides(false)} style={{ background: 'none', border: 'none', color: '#e11d48', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>Edit</button>
+              <div className="mt-8">
+                <div className="flex justify-between items-center mb-4">
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">AVAILABLE RIDES</p>
+                  <button onClick={() => setShowRides(false)} className="text-sm font-black text-[#e11d48] hover:underline">Edit</button>
                 </div>
-                {availableRides.map((r, i) => (
-                  <div key={i} onClick={() => setSelectedRide(i)} style={{ padding: '14px', borderRadius: '14px', border: selectedRide === i ? '2px solid #e11d48' : '2px solid #f3f4f6', background: selectedRide === i ? '#fff5f6' : '#fff', marginBottom: '8px', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '24px' }}>{r.icon}</span>
-                      <div style={{ flex: 1, marginLeft: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <p style={{ fontWeight: 700, margin: 0 }}>{r.name}</p>
-                          {r.id === 'safe' && (
-                            <span style={{ fontSize: '10px', background: 'linear-gradient(to right, #ffd700, #f97316)', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 900 }}>ELITE</span>
+                <div className="flex flex-col gap-3">
+                  {availableRides.map((r, i) => (
+                    <div 
+                      key={i} 
+                      onClick={() => setSelectedRide(i)} 
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                        selectedRide === i 
+                        ? 'border-[#e11d48] bg-[#fff5f6] shadow-md' 
+                        : 'border-slate-100 bg-white hover:border-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-start gap-4">
+                        <span className="text-3xl">{r.icon}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-black text-[#0f172a]">{r.name}</p>
+                            {r.id === 'safe' && (
+                              <span className="text-[10px] bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-md font-black italic">ELITE</span>
+                            )}
+                          </div>
+                          <p className="text-xs font-medium text-slate-500">{r.desc}</p>
+                          {!isPreBooking && (
+                            <p className="text-xs font-black text-[#e11d48] mt-1.5 flex items-center gap-1">
+                              <span className="text-[10px]">⏰</span> Est. Pickup: {r.eta}
+                            </p>
                           )}
                         </div>
-                        <p style={{ fontSize: '11px', color: '#9ca3af', margin: '2px 0 0' }}>{r.desc}</p>
-                        {!isPreBooking && (
-                          <p style={{ fontSize: '11px', color: '#e11d48', fontWeight: 700, margin: '2px 0 0' }}>Est. Pickup: {r.eta}</p>
-                        )}
+                        <p className="font-black text-lg text-[#0f172a]">₹{r.price}</p>
                       </div>
-                      <p style={{ fontWeight: 900, margin: 0 }}>₹{r.price}</p>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
                 {rideStatus === 'idle' ? (
-                  <button onClick={handleConfirmBooking} style={{ width: '100%', marginTop: '20px', padding: '16px', background: '#111827', color: '#fff', fontWeight: 800, borderRadius: '14px', border: 'none', cursor: 'pointer' }}>Confirm Booking</button>
+                  <button 
+                    onClick={handleConfirmBooking} 
+                    className="w-full mt-6 py-5 bg-[#111827] text-white font-black text-lg rounded-2xl shadow-xl shadow-slate-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    Confirm Booking
+                  </button>
                 ) : (
-                  <div style={{ width: '100%', marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ padding: '16px', background: '#f3f4f6', borderRadius: '14px', textAlign: 'center', fontWeight: 800 }}>
+                  <div className="w-full mt-6 flex flex-col gap-3">
+                    <div className="py-4 bg-slate-100 rounded-2xl text-center font-black text-[#0f172a] animate-pulse">
                       {rideStatus === 'searching' ? '⏳ Searching drivers...' : rideStatus === 'accepted' ? '✅ Driver is coming!' : rideStatus === 'arrived' ? '👋 Driver has arrived!' : '🚀 Trip Started'}
                     </div>
 
-                    {/* Chat is shown in the ActiveRideWidget - not duplicated here */}
                     {rideStatus === 'searching' && (
-                      <button onClick={() => {
-                        // Use the robust ID tracking to ensure we can cancel even before polling finishes
-                        const requested = activeRides.find(r => r.status === 'requested' && !r.scheduledTime);
-                        const targetId = requested?._id || searchingRideId;
-                        
-                        if (targetId) {
-                          setCancellingRideId(targetId);
-                          setShowCancelModal(true);
-                        } else {
-                          // Emergency fallback: If no ID found, just reset UI
-                          setRideStatus('idle');
-                          showAlert("Search stopped.", "info");
-                        }
-                      }} style={{ padding: '12px', background: '#fff', color: '#e11d48', border: '1.5px solid #ffe4e6', borderRadius: '12px', fontWeight: 800, cursor: 'pointer' }}>
+                      <button 
+                        onClick={() => {
+                          const requested = activeRides.find(r => r.status === 'requested' && !r.scheduledTime);
+                          const targetId = requested?._id || searchingRideId;
+                          if (targetId) {
+                            setCancellingRideId(targetId);
+                            setShowCancelModal(true);
+                          } else {
+                            setRideStatus('idle');
+                            showAlert("Search stopped.", "info");
+                          }
+                        }} 
+                        className="py-3 bg-white text-[#e11d48] border-2 border-[#ffe4e6] rounded-2xl font-black hover:bg-[#fff5f6] transition-colors"
+                      >
                         Stop Searching
                       </button>
                     )}
@@ -862,95 +972,122 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Map Panel */}
-        <div style={{ flex: 1, position: 'relative' }}>
-          <Map pickupObj={pickupObj} dropObj={dropObj} driverCoords={driverCoords} searching={rideStatus === 'searching'} />
-          {driverInfo && (
-            <div style={{ position: 'absolute', bottom: '24px', right: '24px', background: '#fff', borderRadius: '20px', padding: '20px', width: '280px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                {rideStatus !== 'started' && (
-                  <div>
-                    <p style={{ fontSize: '11px', color: '#e11d48', fontWeight: 800, margin: 0 }}>RIDE PIN</p>
-                    <p style={{ fontSize: '24px', fontWeight: 900, margin: 0 }}>{driverInfo.otp}</p>
-                  </div>
-                )}
-                {rideStatus !== 'started' && (
-                  <div style={{ background: '#f0fdf4', padding: '4px 8px', borderRadius: '8px', border: '1px solid #dcfce7' }}>
-                    <p style={{ fontSize: '10px', color: '#16a34a', fontWeight: 800, margin: 0 }}>📧 SENT TO EMAIL</p>
-                  </div>
-                )}
-              </div>
-              <p style={{ fontSize: '18px', fontWeight: 900, margin: '12px 0 0' }}>{driverInfo.driverName}</p>
-              <p style={{ fontSize: '13px', color: '#6b7280', margin: '2px 0' }}>{driverInfo.vehiclePlate}</p>
-              <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '10px', marginTop: '10px' }}>
-                <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: rideStatus === 'started' ? '#10b981' : '#e11d48' }}>
-                  {rideStatus === 'started'
-                    ? `📍 Estimated Dropoff: ${getEstimatedClockTime(12)}`
-                    : (activeRides.find(r => r._id === driverInfo.rideId)?.scheduledTime)
-                      ? `📅 Confirmed for: ${new Date(activeRides.find(r => r._id === driverInfo.rideId).scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                      : `🚗 Arrival in: ${driverInfo.eta || 'X mins'}`}
-                </p>
-              </div>
-              {rideStatus !== 'started' && (
-                <button onClick={() => { setCancellingRideId(driverInfo.rideId); setShowCancelModal(true); }} style={{ width: '100%', marginTop: '14px', padding: '10px', background: '#fff', color: '#e11d48', border: '1.5px solid #fee2e2', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
-                  Cancel Ride
-                </button>
-              )}
-            </div>
+        {/* Map Panel (Rigid height on mobile to prevent blank white space) */}
+        <div className={`
+          relative transition-all duration-500 bg-slate-200 z-0
+          ${(rideStatus === 'idle' && !showRides) ? 'h-0 hidden lg:block' : 'h-[500px] lg:h-auto w-full block flex-shrink-0'}
+        `} style={{ minHeight: (rideStatus === 'idle' && !showRides) ? '0' : '450px' }}>
+          <Map 
+            key={`map-v5-${showRides}-${rideStatus}`} 
+            pickupObj={pickupObj} 
+            dropObj={dropObj} 
+            driverCoords={driverCoords} 
+            searching={rideStatus === 'searching'} 
+          />
+          
+          {/* Back button for mobile booking view */}
+          {(showRides || rideStatus !== 'idle') && (
+            <button 
+              onClick={() => { setShowRides(false); setRideStatus('idle'); }}
+              className="lg:hidden absolute top-4 left-4 z-20 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-[#111827] border border-slate-100"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+            </button>
           )}
         </div>
+
+        {/* Bottom Sheet (Mobile Booking Options) */}
+        {(showRides || rideStatus !== 'idle') && (
+          <div className="lg:hidden fixed inset-x-0 bottom-0 z-[250] bg-white rounded-t-[2.5rem] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] border-t border-slate-100 max-h-[60vh] overflow-y-auto animate-in slide-in-from-bottom duration-500">
+            <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto my-4 flex-shrink-0" />
+            <div className="px-6 pb-20">
+               {/* This is a simplified version of the sidebar booking content */}
+               {showRides && rideStatus === 'idle' && (
+                 <div>
+                   <div className="flex justify-between items-center mb-6">
+                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">CHOOSE A RIDE</p>
+                      <button onClick={() => setShowRides(false)} className="text-sm font-black text-[#e11d48]">Edit Locations</button>
+                   </div>
+                   <div className="flex flex-col gap-3 mb-8">
+                     {availableRides.map((r, i) => (
+                       <div 
+                         key={i} 
+                         onClick={() => setSelectedRide(i)} 
+                         className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                           selectedRide === i 
+                           ? 'border-[#e11d48] bg-[#fff5f6]' 
+                           : 'border-slate-50 bg-slate-50/50'
+                         }`}
+                       >
+                         <div className="flex items-center gap-4">
+                           <span className="text-3xl">{r.icon}</span>
+                           <div className="flex-1">
+                             <p className="font-black text-[#0f172a] text-sm">{r.name}</p>
+                             <p className="text-[10px] font-bold text-slate-500 mt-0.5">{r.eta} • {r.desc}</p>
+                           </div>
+                           <p className="font-black text-lg text-[#0f172a]">₹{r.price}</p>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                   <button 
+                     onClick={handleConfirmBooking} 
+                     className="w-full py-5 bg-[#111827] text-white font-black text-lg rounded-2xl shadow-xl active:scale-[0.98] transition-all"
+                   >
+                     Confirm Booking
+                   </button>
+                 </div>
+               )}
+                {rideStatus === 'searching' && (
+                  <div className="pt-4 text-center">
+                    <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                      <span className="text-4xl text-[#e11d48]">⏳</span>
+                    </div>
+                    <h3 className="text-xl font-black text-[#0f172a] mb-2">Searching for Drivers...</h3>
+                    <p className="text-sm font-medium text-slate-500 mb-8">We are finding the best SheRide for you.</p>
+                    
+                    <button 
+                      onClick={() => {
+                        const requested = activeRides.find(r => r.status === 'requested' && !r.scheduledTime);
+                        const targetId = requested?._id || searchingRideId;
+                        if (targetId) {
+                          setCancellingRideId(targetId);
+                          setShowCancelModal(true);
+                        } else {
+                          setRideStatus('idle');
+                          showAlert("Search stopped.", "info");
+                        }
+                      }} 
+                      className="w-full py-4.5 bg-white text-[#e11d48] border-2 border-[#ffe4e6] rounded-2xl font-black active:bg-rose-50 transition-all"
+                    >
+                      Stop Searching
+                    </button>
+                  </div>
+                )}
+                {/* Mobile Trip Details removed to use ActiveRideWidget instead, matching Laptop UI */}
+            </div>
+          </div>
+        )}
       </div>
+      {/* Active Rides Widget - Now visible on both Mobile and Desktop to match Laptop experience */}
       <ActiveRideWidget rides={activeRides} unreadCount={unreadCount} />
       
-      {/* ── FLOATING SOS BUTTON ── */}
-      {rideStatus !== 'idle' && rideStatus !== 'searching' && activeRides[0] && activeRides[0].rideType === 'SheRide Safe' && (
-        <button 
-          onClick={async () => {
-            const activeRide = activeRides[0];
-            if (!activeRide) return;
-            const defaultIds = customerProfile?.emergencyContacts?.map((c: any) => c._id) || [];
-            setContactSelection({ visible: true, type: 'sos', rideId: activeRide._id, selectedIds: defaultIds });
-          }}
-          disabled={sosLoading}
-          style={{
-            position: 'fixed',
-            bottom: '40px',
-            left: '24px',
-            width: '72px',
-            height: '72px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #e11d48, #991b1b)',
-            color: '#fff',
-            border: 'none',
-            fontSize: '18px',
-            fontWeight: 900,
-            cursor: 'pointer',
-            boxShadow: '0 12px 32px rgba(225, 29, 72, 0.5)',
-            zIndex: 1200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            animation: 'pulse 2s infinite',
-            textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-          }}>
-          SOS
-        </button>
-      )}
+      {/* SOS Button integrated into ActiveRideWidget for better responsiveness */}
 
       {/* ── CONTACT SELECTION MODAL ── */}
       {contactSelection && contactSelection.visible && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', zIndex: 3500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '28px', width: '100%', maxWidth: '400px', padding: '32px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-            <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-               <span style={{ fontSize: '32px' }}>{contactSelection.type === 'sos' ? '🚨' : '🔗'}</span>
-               <h3 style={{ margin: '8px 0 4px', fontSize: '20px', fontWeight: 900 }}>Select Contacts</h3>
-               <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Choose who should receive this {contactSelection.type === 'sos' ? 'emergency alert' : 'ride update'}.</p>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md z-[100] flex items-center justify-center p-5">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="mb-6 text-center">
+               <span className="text-4xl mb-3 block">{contactSelection.type === 'sos' ? '🚨' : '🔗'}</span>
+               <h3 className="text-2xl font-black text-[#0f172a] mb-1.5">Select Contacts</h3>
+               <p className="text-sm font-medium text-slate-500">Choose who should receive this {contactSelection.type === 'sos' ? 'emergency alert' : 'ride update'}.</p>
             </div>
             
-            <div style={{ maxHeight: '300px', overflowY: 'auto', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="max-h-[350px] overflow-y-auto mb-8 flex flex-col gap-3 no-scrollbar">
                {(!customerProfile?.emergencyContacts || customerProfile.emergencyContacts.length === 0) ? (
-                 <div style={{ padding: '20px', textAlign: 'center', background: '#f8fafc', borderRadius: '12px' }}>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8' }}>No emergency contacts found in your profile.</p>
+                 <div className="p-10 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                    <p className="text-sm font-bold text-slate-400">No emergency contacts found in your profile.</p>
                  </div>
                ) : (
                  customerProfile.emergencyContacts.map((c: any) => {
@@ -966,13 +1103,18 @@ function DashboardContent() {
                               return { ...prev, selectedIds: newIds };
                             });
                           }}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', borderRadius: '14px', border: isSelected ? '1.5px solid #e11d48' : '1px solid #e2e8f0', background: isSelected ? '#fff1f2' : '#fff', cursor: 'pointer', transition: '0.2s' }}>
+                          className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all ${
+                            isSelected ? 'border-[#e11d48] bg-red-50' : 'border-slate-100 hover:border-slate-200'
+                          }`}
+                      >
                        <div>
-                         <p style={{ margin: 0, fontWeight: 800, fontSize: '14px', color: '#0f172a' }}>{c.name}</p>
-                         <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#64748b' }}>{c.relation} {c.email ? `• Email Available` : ''}</p>
+                         <p className="font-black text-[#0f172a]">{c.name}</p>
+                         <p className="text-xs font-bold text-slate-500 mt-0.5">{c.relation} {c.email ? `• Email Available` : ''}</p>
                        </div>
-                       <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: isSelected ? 'none' : '2px solid #cbd5e1', background: isSelected ? '#e11d48' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                         {isSelected && <span style={{ color: '#fff', fontSize: '12px', fontWeight: 900 }}>✓</span>}
+                       <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
+                         isSelected ? 'bg-[#e11d48]' : 'bg-slate-100'
+                       }`}>
+                         {isSelected && <span className="text-white text-xs font-black">✓</span>}
                        </div>
                      </div>
                    );
@@ -980,8 +1122,8 @@ function DashboardContent() {
                )}
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
-               <button onClick={() => setContactSelection(null)} disabled={sosLoading} style={{ flex: 1, padding: '14px', borderRadius: '14px', border: '1.5px solid #e2e8f0', background: '#fff', fontWeight: 800, cursor: 'pointer' }}>Cancel</button>
+            <div className="flex gap-4">
+               <button onClick={() => setContactSelection(null)} disabled={sosLoading} className="flex-1 py-4 rounded-2xl border-2 border-slate-100 font-black text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
                <button 
                  disabled={!customerProfile?.emergencyContacts?.length || contactSelection.selectedIds.length === 0 || sosLoading}
                  onClick={async () => {
@@ -1008,7 +1150,10 @@ function DashboardContent() {
                       showAlert("Location required.", "error");
                    });
                  }} 
-                 style={{ flex: 1, padding: '14px', borderRadius: '14px', border: 'none', background: contactSelection.selectedIds.length === 0 ? '#cbd5e1' : '#e11d48', color: '#fff', fontWeight: 800, cursor: contactSelection.selectedIds.length === 0 ? 'not-allowed' : 'pointer' }}>
+                 className={`flex-1 py-4 rounded-2xl font-black text-white shadow-lg transition-all ${
+                   contactSelection.selectedIds.length === 0 || sosLoading ? 'bg-slate-300 shadow-none' : 'bg-[#e11d48] shadow-red-200'
+                 }`}
+                >
                  {sosLoading ? 'Sending...' : 'Send Alert'}
                </button>
             </div>
@@ -1018,16 +1163,16 @@ function DashboardContent() {
 
       {/* ── CUSTOM CONFIRMATION MODAL ── */}
       {confirmModal && confirmModal.visible && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '28px', width: '100%', maxWidth: '400px', padding: '32px', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-            <div style={{ width: '64px', height: '64px', background: '#fee2e2', color: '#e11d48', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', margin: '0 auto 20px' }}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md z-[200] flex items-center justify-center p-5">
+          <div className="bg-white rounded-[2rem] w-full max-w-sm p-8 text-center shadow-2xl">
+            <div className="w-16 h-16 bg-red-100 text-[#e11d48] rounded-full flex items-center justify-center text-3xl mx-auto mb-5">
               ⚠️
             </div>
-            <h3 style={{ margin: '0 0 12px', fontSize: '20px', fontWeight: 900 }}>{confirmModal.title}</h3>
-            <p style={{ margin: '0 0 28px', color: '#64748b', fontSize: '15px', lineHeight: 1.5 }}>{confirmModal.message}</p>
-            <div style={{ display: 'flex', gap: '12px' }}>
-               <button onClick={() => setConfirmModal(null)} style={{ flex: 1, padding: '14px', borderRadius: '14px', border: '1.5px solid #e2e8f0', background: '#fff', fontWeight: 800, cursor: 'pointer' }}>Cancel</button>
-               <button onClick={confirmModal.onConfirm} style={{ flex: 1, padding: '14px', borderRadius: '14px', border: 'none', background: '#e11d48', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>Confirm</button>
+            <h3 className="text-xl font-black text-[#0f172a] mb-2">{confirmModal.title}</h3>
+            <p className="text-sm font-medium text-slate-500 mb-8 leading-relaxed">{confirmModal.message}</p>
+            <div className="flex gap-3">
+               <button onClick={() => setConfirmModal(null)} className="flex-1 py-3.5 rounded-xl border-2 border-slate-100 font-black text-slate-600">Cancel</button>
+               <button onClick={confirmModal.onConfirm} className="flex-1 py-3.5 rounded-xl bg-[#e11d48] text-white font-black shadow-lg shadow-red-100">Confirm</button>
             </div>
           </div>
         </div>
@@ -1041,46 +1186,41 @@ function DashboardContent() {
         const themeColor = isShare ? '#3b82f6' : '#e11d48';
         const themeBg = isShare ? '#eff6ff' : '#fee2e2';
         const emoji = isShare ? '📍' : '🚨';
-        const overlayBg = isShare ? 'rgba(59, 130, 246, 0.4)' : 'rgba(225, 29, 72, 0.4)';
-        const pulseColor = isShare ? 'rgba(59, 130, 246, 0.7)' : 'rgba(225, 29, 72, 0.7)';
         
         return (
-          <div style={{ position: 'fixed', inset: 0, background: overlayBg, backdropFilter: 'blur(10px)', zIndex: 5000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '440px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', border: `4px solid ${themeColor}` }}>
-              <div style={{ width: '80px', height: '80px', background: themeBg, color: themeColor, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', margin: '0 auto 24px', animation: 'alertPulse 1.5s infinite' }}>
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl z-[1000] flex items-center justify-center p-5">
+            <div className={`bg-white rounded-[2.5rem] w-full max-w-md p-8 sm:p-10 text-center shadow-2xl border-4`} style={{ borderColor: themeColor }}>
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 animate-bounce`} style={{ backgroundColor: themeBg, color: themeColor }}>
                 {emoji}
               </div>
-              <style>{`
-                @keyframes alertPulse {
-                  0% { transform: scale(1); box-shadow: 0 0 0 0 ${pulseColor}; }
-                  70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(0, 0, 0, 0); }
-                  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
-                }
-              `}</style>
-              <h2 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: themeColor }}>
+              
+              <h2 className="text-2xl font-black mb-2" style={{ color: themeColor }}>
                 {isShare ? 'Location Shared' : 'EMERGENCY SOS'}
               </h2>
-              <p style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: 800 }}>{currentAlert.senderId?.name} {isShare ? 'shared their trip!' : 'needs help!'}</p>
-              <p style={{ margin: '0 0 32px', color: '#64748b', fontSize: '15px', lineHeight: 1.5 }}>
+              <p className="text-xl font-black text-[#0f172a] mb-2">{currentAlert.senderId?.name} {isShare ? 'shared their trip!' : 'needs help!'}</p>
+              <p className="text-sm font-medium text-slate-500 mb-8 leading-relaxed">
                 {isShare 
                   ? 'Your contact is currently on a ride and has shared their live location with you.' 
                   : 'Your emergency contact is on a ride and has triggered a safety alert. Please check their live location immediately.'}
               </p>
 
-              <div style={{ background: themeBg, padding: '16px', borderRadius: '16px', textAlign: 'left', marginBottom: '24px', border: `1px solid ${themeColor}40` }}>
-                <h4 style={{ margin: '0 0 8px', fontSize: '14px', color: themeColor, fontWeight: 800 }}>🧑‍✈️ Driver Details:</h4>
-                <p style={{ margin: '0 0 4px', fontSize: '13px', color: '#334155' }}><strong>Name:</strong> {currentAlert.rideId?.driverId?.name || 'N/A'}</p>
-                <p style={{ margin: '0 0 4px', fontSize: '13px', color: '#334155' }}><strong>Vehicle:</strong> {currentAlert.rideId?.driverId?.vehicleNumber || 'N/A'}</p>
-                <p style={{ margin: 0, fontSize: '13px', color: '#334155' }}><strong>Phone:</strong> {currentAlert.rideId?.driverId?.phone || 'N/A'}</p>
+              <div className="text-left p-5 rounded-2xl border mb-8" style={{ backgroundColor: themeBg, borderColor: `${themeColor}40` }}>
+                <h4 className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: themeColor }}>👩‍✈️ Driver Details:</h4>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-slate-700">Name: <span className="text-[#0f172a]">{currentAlert.rideId?.driverId?.name || 'N/A'}</span></p>
+                  <p className="text-sm font-bold text-slate-700">Vehicle: <span className="text-[#0f172a]">{currentAlert.rideId?.driverId?.vehicleNumber || 'N/A'}</span></p>
+                  <p className="text-sm font-bold text-slate-700">Phone: <span className="text-[#0f172a]">{currentAlert.rideId?.driverId?.phone || 'N/A'}</span></p>
+                </div>
               </div>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="flex flex-col gap-3">
                 <a 
                   href={`https://www.google.com/maps?q=${currentAlert.lat},${currentAlert.lng}`}
                   target="_blank"
-                  style={{ textDecoration: 'none', background: themeColor, color: '#fff', padding: '18px', borderRadius: '16px', fontWeight: 800, fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                  className="py-4.5 rounded-2xl text-white font-black text-lg flex items-center justify-center gap-2 shadow-lg"
+                  style={{ backgroundColor: themeColor }}
                 >
-                  📍 Track on Google Maps
+                  📍 Track Live Location
                 </a>
                 <button 
                   onClick={async () => {
@@ -1096,9 +1236,9 @@ function DashboardContent() {
                       console.error('Error marking alert as read:', e);
                     }
                   }}
-                  style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1.5px solid #e2e8f0', background: '#fff', color: '#64748b', fontWeight: 800, cursor: 'pointer' }}
+                  className="py-4 rounded-2xl border-2 border-slate-100 font-black text-slate-400 hover:bg-slate-50 transition-all"
                 >
-                  I have acknowledged this
+                  Acknowledge & Close
                 </button>
               </div>
             </div>
@@ -1107,69 +1247,58 @@ function DashboardContent() {
       })()}
 
       {showRatingModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(8px)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '400px', padding: '36px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
-            <div style={{ fontSize: '48px', marginBottom: '20px' }}>✨</div>
-            <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900 }}>Rate Your Ride</h3>
-            <p style={{ margin: '0 0 32px', color: '#64748b', fontSize: '15px' }}>How was your experience with SheRide?</p>
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[500] flex items-center justify-center p-5">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-sm p-8 sm:p-10 text-center shadow-2xl animate-in zoom-in duration-300">
+            <div className="text-5xl mb-4">✨</div>
+            <h3 className="text-2xl font-black text-[#0f172a] mb-2">Rate Your Ride</h3>
+            <p className="text-sm font-medium text-slate-500 mb-8">How was your experience with SheRide?</p>
             
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '40px' }}>
+            <div className="flex justify-center gap-2 mb-10">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   onClick={() => setRatingValue(star)}
-                  style={{
-                    fontSize: '40px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: star <= ratingValue ? '#fbbf24' : '#e2e8f0',
-                    transition: 'transform 0.2s',
-                    transform: star === ratingValue ? 'scale(1.2)' : 'scale(1)'
-                  }}>
+                  className={`text-4xl transition-all ${
+                    star <= ratingValue ? 'text-yellow-400 scale-110' : 'text-slate-200'
+                  }`}
+                >
                   ★
                 </button>
               ))}
             </div>
 
-            <button
-              onClick={async () => {
-                if (ratingValue === 0) return showAlert("Please select a rating", "warning");
-                setRatingLoading(true);
-                try {
-                  const token = localStorage.getItem('customerToken');
-                  const res = await fetch(`${API_URL}/api/rides/${ratingRideId}/rating`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ rating: ratingValue })
-                  });
-                  if (res.ok) {
-                    setShowRatingModal(false);
-                    setRatingValue(0);
-                    showAlert("Thank you! Rating saved.", "success");
-                  }
-                } catch { showAlert("Failed to save rating", "error"); }
-                setRatingLoading(false);
-              }}
-              disabled={ratingLoading}
-              style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '16px',
-                border: 'none',
-                background: '#111827',
-                color: '#fff',
-                fontSize: '16px',
-                fontWeight: 800,
-                cursor: 'pointer'
-              }}>
-              {ratingLoading ? 'Saving...' : 'Submit Rating'}
-            </button>
-            <button 
-              onClick={() => setShowRatingModal(false)}
-              style={{ background: 'none', border: 'none', color: '#94a3b8', marginTop: '16px', fontWeight: 700, cursor: 'pointer' }}>
-              Maybe Later
-            </button>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={async () => {
+                  if (ratingValue === 0) return showAlert("Please select a rating", "warning");
+                  setRatingLoading(true);
+                  try {
+                    const token = localStorage.getItem('customerToken');
+                    const res = await fetch(`${API_URL}/api/rides/${ratingRideId}/rating`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                      body: JSON.stringify({ rating: ratingValue })
+                    });
+                    if (res.ok) {
+                      setShowRatingModal(false);
+                      setRatingValue(0);
+                      showAlert("Thank you! Rating saved.", "success");
+                    }
+                  } catch { showAlert("Failed to save rating", "error"); }
+                  setRatingLoading(false);
+                }}
+                disabled={ratingLoading}
+                className="w-full py-4.5 bg-[#111827] text-white font-black text-lg rounded-2xl shadow-xl shadow-slate-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                {ratingLoading ? 'Saving...' : 'Submit Rating'}
+              </button>
+              <button 
+                onClick={() => setShowRatingModal(false)}
+                className="py-3 font-black text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1189,19 +1318,13 @@ function DashboardContent() {
       `}</style>
       {/* ── CANCEL RIDE REASON MODAL ── */}
       {showCancelModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', zIndex: 10000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-          <div style={{ background: '#fff', width: '100%', maxWidth: '500px', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', padding: '32px 24px', animation: 'slideUp 0.3s ease-out' }}>
-            <style>{`
-              @keyframes slideUp {
-                from { transform: translateY(100%); }
-                to { transform: translateY(0); }
-              }
-            `}</style>
-            <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 auto 24px' }} />
-            <h3 style={{ margin: '0 0 8px', fontSize: '24px', fontWeight: 900, color: '#0f172a' }}>Why do you want to cancel?</h3>
-            <p style={{ margin: '0 0 24px', color: '#64748b', fontWeight: 500 }}>Please provide the reason for cancellation</p>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md z-[10000] flex items-end justify-center">
+          <div className="bg-white w-full max-w-lg rounded-t-[2.5rem] p-8 sm:p-10 animate-in slide-in-from-bottom duration-300">
+            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
+            <h3 className="text-2xl font-black text-[#0f172a] mb-2">Why do you want to cancel?</h3>
+            <p className="text-sm font-medium text-slate-500 mb-8">Please provide the reason for cancellation</p>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid #f1f5f9' }}>
+            <div className="flex flex-col border-t border-slate-50">
               {[
                 'Selected Wrong Pickup Location',
                 'Selected Wrong Drop Location',
@@ -1232,22 +1355,16 @@ function DashboardContent() {
                         setShowCancelModal(false);
                         setCancellingRideId(null);
                         setSearchingRideId(null);
-                        
-                        // Force a complete UI state reset on successful cancellation
                         setRideStatus('idle');
                         setDriverInfo(null);
                         setDriverCoords(null);
-                        
                         fetchActiveRides();
                         showAlert("✅ Ride cancelled successfully", "success");
                       } else {
                         const errData = await res.json();
-                        // 🤐 Silence the error if it's already cancelled (since that's the intended outcome)
                         if (!errData.message?.includes('already cancelled')) {
                           showAlert(`Failed to cancel: ${errData.message || 'Unknown error'}`, "error");
                         }
-                        
-                        // Always reset the UI to idle regardless of the specific error during cancellation
                         setShowCancelModal(false);
                         setCancellingRideId(null);
                         setSearchingRideId(null);
@@ -1259,26 +1376,17 @@ function DashboardContent() {
                       showAlert("Network Error: Could not reach server", "error"); 
                     }
                   }}
-                 style={{ 
-                   padding: '18px 0', 
-                   background: 'none', 
-                   border: 'none', 
-                   borderBottom: '1px solid #f1f5f9', 
-                   textAlign: 'left', 
-                   fontSize: '15px', 
-                   fontWeight: 700, 
-                   color: '#334155', 
-                   cursor: 'pointer',
-                   display: 'flex',
-                   justifyContent: 'space-between',
-                   alignItems: 'center'
-                 }}>
+                  className="py-5 flex justify-between items-center border-b border-slate-50 font-black text-slate-700 hover:text-[#e11d48] transition-colors group"
+                >
                   {reason}
-                  <span style={{ color: '#cbd5e1', fontSize: '20px' }}>›</span>
+                  <span className="text-slate-200 group-hover:text-[#e11d48] transition-colors text-2xl">›</span>
                 </button>
               ))}
             </div>
-            <button onClick={() => { setShowCancelModal(false); setCancellingRideId(null); }} style={{ width: '100%', marginTop: '24px', padding: '16px', background: '#f1f5f9', color: '#475569', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer' }}>
+            <button 
+              onClick={() => { setShowCancelModal(false); setCancellingRideId(null); }} 
+              className="w-full mt-8 py-4.5 bg-slate-50 text-slate-500 rounded-2xl font-black hover:bg-slate-100 transition-colors"
+            >
               Don't Cancel
             </button>
           </div>
@@ -1294,42 +1402,44 @@ function DashboardContent() {
 
       {/* ⏰ 15-MIN RIDE REMINDER TOAST */}
       {rideReminder && (
-        <div style={{
-          position: 'fixed',
-          top: '80px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 9999,
-          animation: 'reminderSlideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-        }}>
-          <style>{`
-            @keyframes reminderSlideDown {
-              from { transform: translate(-50%, -120%); opacity: 0; }
-              to { transform: translate(-50%, 0); opacity: 1; }
-            }
-          `}</style>
-          <div style={{
-            background: 'linear-gradient(135deg, #111827, #1f2937)',
-            color: '#fff',
-            padding: '16px 28px',
-            borderRadius: '20px',
-            fontFamily: 'Outfit, sans-serif',
-            fontWeight: 800,
-            fontSize: '15px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            whiteSpace: 'nowrap',
-            border: '1px solid rgba(255,255,255,0.08)'
-          }}>
-            <span style={{ fontSize: '22px' }}>⏰</span>
-            <span>{rideReminder.replace('⏰ ', '')}</span>
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] animate-in slide-in-from-top duration-500">
+          <div className="bg-slate-900 text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3 border border-slate-800">
+            <span className="text-xl animate-bounce">⏰</span>
+            <p className="font-black text-sm tracking-wide">{rideReminder}</p>
             <button
               onClick={() => setRideReminder(null)}
-              style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '50%', cursor: 'pointer', fontWeight: 900, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '8px' }}
+              className="bg-white/20 hover:bg-white/30 text-white w-6 h-6 rounded-full flex items-center justify-center font-black cursor-pointer transition-colors"
             >×</button>
           </div>
+        </div>
+      )}
+
+      {/* ── MOBILE BOTTOM NAVIGATION BAR (Rapido Style) ── */}
+      {/* Hide bottom bar during active booking/ride to prevent overlap */}
+      {!showRides && rideStatus === 'idle' && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 z-[200] flex items-center justify-around px-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+          <Link href="/dashboard" className="flex flex-col items-center gap-1.5 px-4 no-underline">
+            <span className="text-xl">🏠</span>
+            <span className="text-[10px] font-black text-[#e11d48] uppercase tracking-wider">Ride</span>
+          </Link>
+          <Link href="/history" className="flex flex-col items-center gap-1.5 px-4 no-underline">
+            <span className="text-xl">📜</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">My Rides</span>
+          </Link>
+          <button onClick={() => setIsSafetyOpen(true)} className="flex flex-col items-center gap-1.5 px-4">
+            <div className="w-12 h-12 -mt-10 bg-[#e11d48] rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+              <span className="text-xl">🛡️</span>
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Safety</span>
+          </button>
+          <Link href="/profile" className="flex flex-col items-center gap-1.5 px-4 no-underline">
+            <span className="text-xl">👤</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Profile</span>
+          </Link>
+          <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4">
+            <span className="text-xl">🚪</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Logout</span>
+          </button>
         </div>
       )}
     </div>

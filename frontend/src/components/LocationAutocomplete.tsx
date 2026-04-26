@@ -125,11 +125,11 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
   return (
     <div className={`relative w-full ${className}`} ref={dropdownRef}>
       <div className="relative flex items-center group">
-        <div className="absolute left-3 flex items-center">
+        <div className="absolute left-4 flex items-center z-10 pointer-events-none">
           {dotColor ? (
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor }} />
+            <div className="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm" style={{ background: dotColor }} />
           ) : (
-            <div className="text-gray-400 group-focus-within:text-pink-500">
+            <div className="text-slate-400 group-focus-within:text-[#e11d48] transition-colors">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
             </div>
           )}
@@ -142,13 +142,13 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
             const val = e.target.value;
             setQuery(val);
             if (onChange) onChange(val);
-            onSelect(null); // Clear coordinates while typing
+            onSelect(null); 
             setShowDropdown(true);
           }}
           placeholder={placeholder}
-          className={`w-full ${dotColor ? 'pl-8' : 'pl-10'} pr-24 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all shadow-sm text-gray-800 font-medium`}
+          className={`w-full ${dotColor ? 'pl-10' : 'pl-12'} pr-24 py-4 sm:py-4.5 bg-slate-50/50 border-2 border-slate-100 rounded-2xl focus:border-[#e11d48] focus:bg-white focus:ring-4 focus:ring-rose-50 outline-none transition-all shadow-sm text-[#0f172a] font-black text-sm placeholder:text-slate-300 placeholder:font-bold`}
         />
-        <div className="absolute right-2 flex items-center gap-1">
+        <div className="absolute right-3 flex items-center gap-1">
           {query && (
             <button
               onClick={() => { 
@@ -158,7 +158,7 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
                 onSelect(null); 
                 setSuggestions([]); 
               }}
-              className="p-1.5 hover:bg-gray-100 rounded-full text-gray-400"
+              className="p-1.5 hover:bg-slate-100 rounded-full text-slate-300 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -170,10 +170,10 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
             showCurrentLocation && (
               <button
                 onClick={useCurrentLocation}
-                className="p-2 hover:bg-pink-50 rounded-lg text-pink-500 text-lg"
+                className="w-10 h-10 flex items-center justify-center hover:bg-rose-50 rounded-xl text-[#e11d48] transition-all active:scale-90"
                 title="Use current location"
               >
-                📍
+                <MapPin className="w-5 h-5" />
               </button>
             )
           )}
@@ -181,19 +181,19 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
       </div>
 
       {showDropdown && suggestions.length > 0 && (
-        <div className="absolute z-[2000] w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl max-h-72 overflow-y-auto">
+        <div className="absolute z-[2000] w-full mt-3 bg-white border border-slate-100 rounded-3xl shadow-2xl shadow-rose-900/10 max-h-80 overflow-y-auto no-scrollbar animate-in fade-in slide-in-from-top-2 duration-200">
           {suggestions.map((item, index) => (
             <button
               key={item.id || index}
               onClick={() => handleSelect(item)}
-              className="w-full flex items-start gap-3 p-4 hover:bg-pink-50 text-left border-b border-gray-50 last:border-0"
+              className="w-full flex items-start gap-4 p-5 hover:bg-rose-50/50 text-left transition-colors border-b border-slate-50 last:border-0"
             >
-              <div className="mt-1 p-2 bg-gray-50 rounded-lg">
-                <MapPin className="w-4 h-4 text-gray-400" />
+              <div className="mt-0.5 p-2 bg-slate-100 rounded-xl group-hover:bg-white transition-colors">
+                <MapPin className="w-4 h-4 text-slate-400 group-hover:text-[#e11d48]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 truncate">{item.text}</p>
-                <p className="text-xs text-gray-500 truncate">{item.place_name?.replace(item.text + ', ', '')}</p>
+                <p className="font-black text-[#0f172a] text-sm truncate">{item.text}</p>
+                <p className="text-xs text-slate-400 font-bold truncate mt-0.5">{item.place_name?.replace(item.text + ', ', '')}</p>
               </div>
             </button>
           ))}
