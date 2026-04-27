@@ -6,7 +6,7 @@ import { AuthProvider } from '@/context/AuthContext'
 const outfit = Outfit({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800', '900'] })
 
 export const metadata: Metadata = {
-  title: 'SheRide – Women-Only Ride Booking',
+  title: 'SheRide v1.1 – Women-Only Ride Booking',
   description: 'Safe rides by women, for women.',
 }
 

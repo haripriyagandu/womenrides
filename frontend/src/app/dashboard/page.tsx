@@ -700,24 +700,24 @@ function DashboardContent() {
             </div>
             <div className="p-4 space-y-2">
               <button onClick={() => setIsAccountMenuOpen(false)} className="w-full flex items-center gap-4 p-4 rounded-2xl bg-rose-50 text-[#e11d48] transition-colors text-left">
-                <span className="text-xl">🗺️</span>
+                <MapIcon className="w-5 h-5" />
                 <span className="font-black">Back to Map</span>
               </button>
               <Link href="/profile" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
-                <span className="text-xl">👤</span>
+                <User className="w-5 h-5 text-[#0f172a]" />
                 <span className="font-black text-[#0f172a]">My Profile</span>
               </Link>
               <Link href="/history" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
-                <span className="text-xl">📜</span>
+                <History className="w-5 h-5 text-[#0f172a]" />
                 <span className="font-black text-[#0f172a]">Ride History</span>
               </Link>
               <button onClick={() => { setIsSafetyOpen(true); setIsAccountMenuOpen(false); }} className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors text-left">
-                <span className="text-xl">🛡️</span>
+                <ShieldCheck className="w-5 h-5 text-[#0f172a]" />
                 <span className="font-black text-[#0f172a]">Safety Dashboard</span>
               </button>
               <div className="h-px bg-slate-100 my-4" />
               <button onClick={logout} className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-600 hover:bg-rose-50 transition-colors text-left">
-                <span className="text-xl">🚪</span>
+                <LogOut className="w-5 h-5" />
                 <span className="font-black">Logout</span>
               </button>
             </div>
