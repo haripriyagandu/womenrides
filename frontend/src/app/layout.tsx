@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+okimport type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'

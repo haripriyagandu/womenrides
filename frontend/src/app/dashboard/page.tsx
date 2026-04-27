@@ -143,7 +143,7 @@ function DashboardContent() {
           const now = Date.now();
           // If 10 mins passed since request
           if (now - createdAt > 10 * 60 * 1000) {
-            showAlert(`Your scheduled ride for ${new Date(ride.scheduledTime).toLocaleTimeString()} is not being accepted by any driver. Please reschedule.`, "warning", 10000);
+            showAlert(`Your scheduled ride for ${new Date(ride.scheduledTime).toLocaleTimeString()} is not being accepted by any driver. Please reschedule.`, "warning");
           }
         }
       });
