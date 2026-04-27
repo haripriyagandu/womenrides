@@ -11,7 +11,6 @@ import ActiveRideWidget from '@/components/ActiveRideWidget';
 import SystemAlert from '@/components/SystemAlert';
 import ChatOverlay from '@/components/ChatOverlay';
 import { getEstimatedClockTime } from '@/utils/EstimatedTimeHelper';
-import { Home, History, User, LogOut, ShieldCheck, Map as MapIcon } from 'lucide-react';
 
 // Map rendering without SSR
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
@@ -700,24 +699,24 @@ function DashboardContent() {
             </div>
             <div className="p-4 space-y-2">
               <button onClick={() => setIsAccountMenuOpen(false)} className="w-full flex items-center gap-4 p-4 rounded-2xl bg-rose-50 text-[#e11d48] transition-colors text-left">
-                <MapIcon className="w-5 h-5" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
                 <span className="font-black">Back to Map</span>
               </button>
               <Link href="/profile" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
-                <User className="w-5 h-5 text-[#0f172a]" />
+                <svg className="w-5 h-5 text-[#0f172a]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 <span className="font-black text-[#0f172a]">My Profile</span>
               </Link>
               <Link href="/history" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
-                <History className="w-5 h-5 text-[#0f172a]" />
+                <svg className="w-5 h-5 text-[#0f172a]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span className="font-black text-[#0f172a]">Ride History</span>
               </Link>
               <button onClick={() => { setIsSafetyOpen(true); setIsAccountMenuOpen(false); }} className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors text-left">
-                <ShieldCheck className="w-5 h-5 text-[#0f172a]" />
+                <svg className="w-5 h-5 text-[#0f172a]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 <span className="font-black text-[#0f172a]">Safety Dashboard</span>
               </button>
               <div className="h-px bg-slate-100 my-4" />
               <button onClick={logout} className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-600 hover:bg-rose-50 transition-colors text-left">
-                <LogOut className="w-5 h-5" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 <span className="font-black">Logout</span>
               </button>
             </div>
@@ -770,13 +769,17 @@ function DashboardContent() {
                     {/* Call Emergency Card */}
                     {isElite ? (
                       <a href="tel:112" style={{ textDecoration: 'none', background: '#fff', border: '1.5px solid #f1f5f9', borderRadius: '20px', padding: '20px', textAlign: 'left', cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                        <span style={{ fontSize: '24px', display: 'block', marginBottom: '12px', color: '#e11d48' }}>📞</span>
+                        <span style={{ fontSize: '24px', display: 'block', marginBottom: '12px', color: '#e11d48' }}>
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        </span>
                         <p style={{ margin: 0, fontWeight: 800, fontSize: '15px' }}>Call Emergency</p>
                         <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#6b7280' }}>Quick dial 112</p>
                       </a>
                     ) : (
-                      <div onClick={() => showAlert("SOS features like calling emergency services directly from the app are restricted to SheRide Safe (Elite) bookings.", "warning")} style={{ textDecoration: 'none', background: '#f8fafc', border: '1.5px dashed #cbd5e1', borderRadius: '20px', padding: '20px', textAlign: 'left', cursor: 'pointer', transition: '0.3s', opacity: 0.7 }}>
-                        <span style={{ fontSize: '24px', display: 'block', marginBottom: '12px', color: '#94a3b8' }}>🔒</span>
+                      <div onClick={() => showAlert("SOS features are restricted to SheRide Safe (Elite) bookings.", "warning")} style={{ textDecoration: 'none', background: '#f8fafc', border: '1.5px dashed #cbd5e1', borderRadius: '20px', padding: '20px', textAlign: 'left', cursor: 'pointer', transition: '0.3s', opacity: 0.7 }}>
+                        <span style={{ fontSize: '24px', display: 'block', marginBottom: '12px', color: '#94a3b8' }}>
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </span>
                         <p style={{ margin: 0, fontWeight: 800, fontSize: '15px', color: '#64748b' }}>Call Emergency</p>
                         <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#94a3b8' }}>Elite feature</p>
                       </div>
@@ -1459,25 +1462,25 @@ function DashboardContent() {
           style={{ display: 'flex' }}
         >
           <Link href="/dashboard" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
-            <Home className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Home</span>
           </Link>
           <Link href="/history" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
-            <History className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">My Rides</span>
           </Link>
           <button onClick={() => setIsSafetyOpen(true)} className="flex flex-col items-center gap-1.5 px-4 group">
             <div className="w-12 h-12 -mt-10 bg-[#e11d48] rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white group-hover:scale-110 transition-transform">
-              <ShieldCheck className="w-6 h-6" />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </div>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Safety</span>
           </button>
           <Link href="/profile" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
-            <User className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Profile</span>
           </Link>
           <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4 group">
-            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-rose-600 uppercase tracking-wider transition-colors">Logout</span>
           </button>
         </div>

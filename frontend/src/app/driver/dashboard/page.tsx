@@ -8,7 +8,6 @@ import RoleGuard from '@/components/RoleGuard';
 import SystemAlert from '@/components/SystemAlert';
 import ChatOverlay from '@/components/ChatOverlay';
 import Link from 'next/link';
-import { Home, History, User, LogOut } from 'lucide-react';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -731,19 +730,19 @@ function DriverDashboardContent() {
           style={{ display: 'flex' }}
         >
           <button onClick={() => setRideState('accepted')} className="flex flex-col items-center gap-1.5 px-4 group">
-            <Home className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Home</span>
           </button>
           <Link href="/driver/history" className="flex flex-col items-center gap-1.5 px-4 no-underline group">
-            <History className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">My Rides</span>
           </Link>
           <button onClick={() => setIsProfileOpen(true)} className="flex flex-col items-center gap-1.5 px-4 group">
-            <User className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-[#e11d48] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-[#e11d48] uppercase tracking-wider transition-colors">Profile</span>
           </button>
           <button onClick={logout} className="flex flex-col items-center gap-1.5 px-4 group">
-            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             <span className="text-[10px] font-black text-slate-400 group-hover:text-rose-600 uppercase tracking-wider transition-colors">Logout</span>
           </button>
         </div>
