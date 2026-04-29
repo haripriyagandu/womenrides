@@ -107,6 +107,9 @@ const loginUser = async (req, res) => {
     const { phone, password } = req.body;
     console.log('Login attempt for phone:', phone);
 
+    // For presentation demo purposes, hardcode OTP to 1234
+    const demoOtp = '1234';
+
     const user = await User.findOne({ phone });
 
     if (!user) {
@@ -117,11 +120,9 @@ const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid phone or password' });
     }
-
-    // Instead of returning the token, send an OTP
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    
     registrationOtps[phone] = { 
-      otp, 
+      otp: demoOtp, 
       expires: Date.now() + 600000,
       userData: {
         _id: user.id,
@@ -134,17 +135,15 @@ const loginUser = async (req, res) => {
       }
     };
 
-    console.log('Sending OTP to:', user.email);
+    console.log(`Sending OTP to: ${user.email} (Demo OTP: ${demoOtp})`);
     const emailResult = await sendEmail({ 
       to: user.email, 
       subject: 'SheRide Login Verification', 
-      text: otp 
+      text: demoOtp 
     });
 
     if (emailResult && !emailResult.success) {
-      console.error('Email sending failed in sendEmail util:', emailResult.error);
-      const errDetail = emailResult.error ? (emailResult.error.message || emailResult.error.toString()) : 'Unknown error';
-      return res.status(500).json({ message: `SMTP Error: ${errDetail}` });
+      console.error('Email sending failed due to Render block, but proceeding to allow demo login.', emailResult.error);
     }
 
     res.status(200).json({ 
@@ -208,8 +207,7 @@ const sendRegistrationOtp = async (req, res) => {
     });
 
     if (emailResult && !emailResult.success) {
-      console.error('Email sending failed in sendEmail util:', emailResult.error);
-      return res.status(500).json({ message: 'Failed to send OTP email. Please check your SMTP settings.' });
+      console.error('Email sending failed due to Render block, but proceeding to allow demo registration.', emailResult.error);
     }
     
     res.status(200).json({ message: 'OTP sent successfully to your email' });
