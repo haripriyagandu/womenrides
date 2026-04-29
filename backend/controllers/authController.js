@@ -143,7 +143,8 @@ const loginUser = async (req, res) => {
 
     if (emailResult && !emailResult.success) {
       console.error('Email sending failed in sendEmail util:', emailResult.error);
-      return res.status(500).json({ message: 'Failed to send verification email. Please check your SMTP settings.' });
+      const errDetail = emailResult.error ? (emailResult.error.message || emailResult.error.toString()) : 'Unknown error';
+      return res.status(500).json({ message: `SMTP Error: ${errDetail}` });
     }
 
     res.status(200).json({ 
