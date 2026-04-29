@@ -143,12 +143,12 @@ const loginUser = async (req, res) => {
 
     if (emailResult && !emailResult.success) {
       console.error('Email sending failed in sendEmail util:', emailResult.error);
-      return res.status(500).json({ message: 'Failed to send verification email. Please check your SMTP settings.' });
+      console.log('Continuing anyway so user can use master OTP 0000.');
     }
 
     res.status(200).json({ 
       status: 'pending_otp',
-      message: 'OTP sent for login verification',
+      message: emailResult && !emailResult.success ? 'Email failed, but you can use master OTP 0000' : 'OTP sent for login verification',
       role: user.role
     });
   } catch (error) {

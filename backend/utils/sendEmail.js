@@ -17,6 +17,9 @@ const sendEmail = async ({ to, subject, html, text }) => {
         user: process.env.SMTP_USER,
         pass: cleanPass,
       },
+      connectionTimeout: 5000, // 5 seconds
+      greetingTimeout: 5000,
+      socketTimeout: 5000
     });
   } else {
     // Ethereal Mock
