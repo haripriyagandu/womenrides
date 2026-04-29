@@ -3,30 +3,58 @@ const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
 const sendEmail = async ({ to, subject, html, text }) => {
-  let transporter;
-
   const isProduction = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
 
   if (isProduction) {
-    // Real SMTP (Logic to remove spaces from the app password automatically)
     const cleanPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : '';
     
-    transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: cleanPass,
-      },
-      connectionTimeout: 15000,
-      greetingTimeout: 15000,
-      socketTimeout: 15000
-    });
+    try {
+      // PROXY VIA VERCEL SERVERLESS FUNCTION
+      // Render Free Tier blocks outbound SMTP (port 465/587) entirely to prevent spam.
+      // However, Vercel Serverless Functions allow outbound SMTP. 
+      // So the backend simply forwards the email request to the frontend's API.
+      let response = await fetch('https://womenrides.vercel.app/api/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to,
+          subject,
+          text: text || html,
+          user: process.env.SMTP_USER,
+          pass: cleanPass
+        })
+      });
+
+      if (response.status === 404) {
+        response = await fetch('https://womenrides-app.vercel.app/api/email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to,
+            subject,
+            text: text || html,
+            user: process.env.SMTP_USER,
+            pass: cleanPass
+          })
+        });
+      }
+
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Vercel relay failed to send email');
+      }
+
+      console.log('Email successfully relayed through Vercel and sent to:', to);
+      return { success: true };
+    } catch (error) {
+      console.error('SMTP Relay Error:', error);
+      return { success: false, error: error.message };
+    }
   } else {
     // Ethereal Mock
     let testAccount = await nodemailer.createTestAccount();
-    transporter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
       secure: false,
