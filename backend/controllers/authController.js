@@ -107,9 +107,6 @@ const loginUser = async (req, res) => {
     const { phone, password } = req.body;
     console.log('Login attempt for phone:', phone);
 
-    // For presentation demo purposes, hardcode OTP to 1234
-    const demoOtp = '1234';
-
     const user = await User.findOne({ phone });
 
     if (!user) {
@@ -120,9 +117,12 @@ const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid phone or password' });
     }
+
+    // Instead of returning the token, send an OTP
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     
     registrationOtps[phone] = { 
-      otp: demoOtp, 
+      otp, 
       expires: Date.now() + 600000,
       userData: {
         _id: user.id,
@@ -135,15 +135,17 @@ const loginUser = async (req, res) => {
       }
     };
 
-    console.log(`Sending OTP to: ${user.email} (Demo OTP: ${demoOtp})`);
+    console.log(`Sending OTP to: ${user.email}`);
     const emailResult = await sendEmail({ 
       to: user.email, 
       subject: 'SheRide Login Verification', 
-      text: demoOtp 
+      text: otp 
     });
 
     if (emailResult && !emailResult.success) {
-      console.error('Email sending failed due to Render block, but proceeding to allow demo login.', emailResult.error);
+      console.error('Email sending failed in sendEmail util:', emailResult.error);
+      const errDetail = emailResult.error ? (emailResult.error.message || emailResult.error.toString()) : 'Unknown error';
+      return res.status(500).json({ message: `SMTP Error: ${errDetail}` });
     }
 
     res.status(200).json({ 
